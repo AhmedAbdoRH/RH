@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- ربط ملف CSS خارجي -->
+   <link rel="stylesheet" href="m.css">
+  <title>مكتب رحلة هدف لخدمات التسويق</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="header-section">
+      <div class="page-title">إجمالي دخل مكتب رحلة هدف لخدمات التسويق</div>
+      <div class="sub-title">لشهر 1 لعام 2024</div>
+    </div>
+    <div class="top-section">
+      <div class="content-section">
+        <div class="centralized-content">
+          <div class="large-number" id="totalIncome">$0.00</div>
+          <div class="details">
+            <p>نصيب مكتب التسويق: <span id="marketingShare">$0.00</span></p>
+            <p>نصيب المكتب الرئيسي: <span id="mainOfficeShare">$0.00</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: center; width: 100%;">
+      <div class="result-box">
+        <h4>نتيجة المقاصة</h4>
+        <p id="clearanceResult">$0.00</p>
+        <button class="action-button" onclick="handleAction()">التحويل الآن</button>
+      </div>
+    </div>
+    <div class="bottom-section">
+      <div class="section-title">إدارة المشاريع</div>
+      <div class="input-section">
+        <input type="text" id="projectName" placeholder="اسم المشروع">
+        <input type="number" id="projectCost" placeholder="التكلفة">
+        <div>
+          <input type="radio" name="projectType" value="egypt" id="egypt" checked>
+          <label for="egypt">مصر</label>
+          <input type="radio" name="projectType" value="saudi" id="saudi">
+          <label for="saudi">المملكة</label>
+          <input type="radio" name="projectType" value="mah" id="mah">
+          <label for="mah">MAH/MOH</label>
+        </div>
+        <button onclick="addProject()">إضافة المشروع</button>
+      </div>
+
+      <div class="tables-container">
+        <div class="table-container">
+          <h3>مشاريع مصر</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>المشروع</th>
+                <th>التاريخ</th>
+                <th>التكلفة</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="egyptProjectsTable"></tbody>
+          </table>
+          <p id="egyptTotal">الإجمالي: $0.00</p>
+        </div>
+
+        <div class="table-container">
+          <h3>مشاريع المملكة</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>المشروع</th>
+                <th>التاريخ</th>
+                <th>التكلفة</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="saudiProjectsTable"></tbody>
+          </table>
+          <p id="saudiTotal">الإجمالي: $0.00</p>
+        </div>
+
+        <div class="table-container">
+          <h3>MAH/MOH</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>المشروع</th>
+                <th>التاريخ</th>
+                <th>التكلفة</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mahProjectsTable"></tbody>
+          </table>
+          <p id="mahTotal">الإجمالي: $0.00</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    <!-- إضافة مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDTQ6PVOahSpXKjb6-r7OPjWbO2maC3tio",
+        authDomain: "rehlathadaf.firebaseapp.com",
+        databaseURL: "https://rehlathadaf-default-rtdb.firebaseio.com",
+        projectId: "rehlathadaf",
+        storageBucket: "rehlathadaf.firebasestorage.app",
+        messagingSenderId: "135760464219",
+        appId: "1:135760464219:web:14797faaa760c0c475727e",
+        measurementId: "G-WRS8PETXWZ"
+      };
+  
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore(app);
+      const analytics = firebase.analytics(app);
+  
+      let totalSaudi = 0;
+      let totalMah = 0;
+      let totalEgypt = 0;
+  
+      document.addEventListener('DOMContentLoaded', loadProjects);
+  
+      function addProject() {
+        const name = document.getElementById('projectName').value.trim();
+        const cost = parseFloat(document.getElementById('projectCost').value);
+        const projectType = document.querySelector('input[name="projectType"]:checked').value;
+  
+        if (!name || isNaN(cost) || cost <= 0) {
+          alert("يرجى إدخال اسم المشروع وتكلفة صحيحة.");
+          return;
+        }
+  
+        const date = new Date().toLocaleDateString('ar-EG', { day: '2-digit', month: '2-digit' });
+        const tableBodyId = `${projectType}ProjectsTable`;
+        const tableBody = document.getElementById(tableBodyId);
+  
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${date}</td>
+          <td>$${cost.toFixed(2)}</td>
+          <td><button class="delete-button" onclick="deleteProject(this, '${projectType}', ${cost})">حذف</button></td>
+        `;
+        tableBody.appendChild(row);
+  
+        if (projectType === 'saudi') totalSaudi += cost;
+        else if (projectType === 'mah') totalMah += cost;
+        else if (projectType === 'egypt') totalEgypt += cost;
+  
+        saveProjectToStorage(name, cost, projectType, date);
+        updateTotals();
+  
+        // إعادة تعيين خانات الإدخال
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectCost').value = '';
+        document.getElementById('egypt').checked = true; // إعادة التحديد لقسم مصر بشكل افتراضي
+      }
+  
+      function deleteProject(button, projectType, cost) {
+        const row = button.parentElement.parentElement;
+        const name = row.cells[0].textContent;
+        const date = row.cells[1].textContent;
+  
+        row.remove();
+  
+        if (projectType === 'saudi') totalSaudi -= cost;
+        else if (projectType === 'mah') totalMah -= cost;
+        else if (projectType === 'egypt') totalEgypt -= cost;
+  
+        removeProjectFromStorage(name, cost, projectType, date);
+        updateTotals();
+      }
+  
+      function updateTotals() {
+        document.getElementById('saudiTotal').textContent = `الإجمالي: $${totalSaudi.toFixed(2)}`;
+        document.getElementById('mahTotal').textContent = `الإجمالي: $${totalMah.toFixed(2)}`;
+        document.getElementById('egyptTotal').textContent = `الإجمالي: $${totalEgypt.toFixed(2)}`;
+  
+        const totalIncome = totalSaudi + totalMah + totalEgypt;
+        document.getElementById('totalIncome').textContent = `$${totalIncome.toFixed(2)}`;
+  
+        const marketingShare = totalMah + (totalSaudi * (2 / 3)) + (totalEgypt * (2 / 3));
+        const mainOfficeShare = (totalSaudi * (1 / 3)) + (totalEgypt * (1 / 3));
+  
+        document.getElementById('marketingShare').textContent = `$${marketingShare.toFixed(2)}`;
+        document.getElementById('mainOfficeShare').textContent = `$${mainOfficeShare.toFixed(2)}`;
+  
+        // حساب نتيجة المقاصة
+        const clearanceResult =
+          (totalSaudi * (2 / 3)) + // نصيب مكتب التسويق من مشاريع المملكة
+          totalMah +               // كامل العائد من مشاريع MAH/MOH
+          -(totalEgypt * (1 / 3)); // طرح نصيب المكتب الرئيسي من مشاريع مصر
+  
+        document.getElementById('clearanceResult').textContent = `$${clearanceResult.toFixed(2)}`;
+      }
+  
+      function saveProjectToStorage(name, cost, projectType, date) {
+        const projects = JSON.parse(localStorage.getItem('projects')) || [];
+        projects.push({ name, cost, projectType, date });
+        localStorage.setItem('projects', JSON.stringify(projects));
+      }
+  
+      function removeProjectFromStorage(name, cost, projectType, date) {
+        const projects = JSON.parse(localStorage.getItem('projects')) || [];
+        const updatedProjects = projects.filter(
+          project => !(project.name === name && project.cost === cost && project.projectType === projectType && project.date === date)
+        );
+        localStorage.setItem('projects', JSON.stringify(updatedProjects));
+      }
+  
+      function loadProjects() {
+        const projects = JSON.parse(localStorage.getItem('projects')) || [];
+        projects.forEach(project => {
+          const { name, cost, projectType, date } = project;
+          const tableBodyId = `${projectType}ProjectsTable`;
+          const tableBody = document.getElementById(tableBodyId);
+  
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${date}</td>
+            <td>$${cost.toFixed(2)}</td>
+            <td><button class="delete-button" onclick="deleteProject(this, '${projectType}', ${cost})">حذف</button></td>
+          `;
+          tableBody.appendChild(row);
+  
+          if (projectType === 'saudi') totalSaudi += cost;
+          else if (projectType === 'mah') totalMah += cost;
+          else if (projectType === 'egypt') totalEgypt += cost;
+        });
+        updateTotals();
+      }
+  
+      function handleAction() {
+        alert('تم تنفيذ التحويل.');
+      }
+    </script>
+  </script>
+  
+</body>
+
+</html>

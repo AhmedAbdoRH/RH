@@ -1,0 +1,299 @@
+/* 
+  تنسيق عام للصفحة 
+*/
+body {
+  font-family: Arial, sans-serif; /* نوع الخط المستخدم في الصفحة */
+  margin: 0; /* إزالة الهوامش الافتراضية */
+  padding: 0; /* إزالة الحشو الافتراضي */
+  background-color: #121212; /* لون خلفية الصفحة (أسود داكن) */
+  color: #ffffff; /* لون النصوص في الصفحة (أبيض) */
+  display: flex; /* استخدام flexbox لترتيب العناصر */
+  flex-direction: column; /* ترتيب العناصر بشكل عمودي */
+  align-items: center; /* محاذاة العناصر في المنتصف أفقياً */
+  min-height: 100vh; /* جعل ارتفاع الصفحة على الأقل بارتفاع الشاشة */
+  text-align: right; /* محاذاة النصوص إلى اليمين */
+  direction: rtl; /* اتجاه الصفحة من اليمين إلى اليسار */
+}
+
+/* 
+تنسيق الحاوية الرئيسية 
+*/
+.container {
+  width: 100%; /* جعل عرض الحاوية بعرض الصفحة */
+  max-width: 1200px; /* تحديد أقصى عرض للحاوية */
+  padding: 0px; /* إزالة الحشو */
+  background-color: #1e1e1e; /* لون خلفية الحاوية (رمادي داكن) */
+  border-radius: 0; /* إزالة أي انحناءات من زوايا الحاوية */
+  box-shadow: none; /* إزالة أي ظل من الحاوية */
+}
+
+/* 
+تنسيق أقسام الصفحة 
+*/
+.header-section {  /* تنسيق قسم رأس الصفحة */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.page-title { /* تنسيق عنوان الصفحة */
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 0px;
+}
+
+.sub-title { /* تنسيق العنوان الفرعي */
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 0px;
+}
+
+.top-section { /* تنسيق القسم العلوي */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 0px;
+  width: 100%;
+  flex-direction: column;
+}
+
+.content-section { /* تنسيق قسم المحتوى */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.centralized-content { /* تنسيق المحتوى في المنتصف */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bottom-section { /* تنسيق القسم السفلي */
+  margin: 5px -20px -7px -72px;
+  width: 100%;
+  background-color: #141414;
+  max-width: 1000px;
+  padding: 42px;
+  align-items: center;
+}
+
+.section-title { /* تنسيق عنوان القسم */
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.input-section { /* تنسيق قسم الإدخال */
+  margin-top: 10px;
+  text-align: center;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.input-section input,
+.input-section button {
+  margin: 5px;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.tables-container { /* تنسيق حاوية الجداول */
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 25px;
+  flex-direction: row;
+}
+
+.table-container { /* تنسيق حاوية الجدول */
+  flex: 1;
+  max-width: 48%; /* جعل الجداول تأخذ نصف المساحة تقريبًا */
+  background-color: #2c2c2c;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* 
+تنسيق الجداول 
+*/
+table { /* تنسيق الجدول */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, /* تنسيق خلايا الجدول */
+table td {
+  padding: 10px;
+  border: 1px solid #444;
+  text-align: right;
+}
+
+table th { /* تنسيق خلايا رأس الجدول */
+  background-color: #444;
+}
+
+table tr:nth-child(even) { /* تنسيق الصفوف الزوجية */
+  background-color: #333;
+}
+
+table tr:nth-child(odd) { /* تنسيق الصفوف الفردية */
+  background-color: #222;
+}
+
+.delete-button { /* تنسيق زر الحذف */
+  background-color: #666;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #555;
+}
+
+/* 
+تنسيقات إضافية 
+*/
+.large-number { /* تنسيق الأرقام الكبيرة */
+  font-size: 48px;
+  font-weight: bold;
+  color: #ff4444; /* لون أحمر داكن */
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.totals-under { /* تنسيق السطور تحت الحساب الإجمالي */
+  margin-top: 10px;
+  text-align: center;
+  font-size: 18px;
+  color: #aaa;
+}
+
+.totals-under p {
+  margin: 5px 0;
+}
+
+/* 
+تنسيقات متجاوبة 
+*/
+@media (max-width: 768px) { /* للشاشات الصغيرة (الأجهزة اللوحية) */
+  .top-section {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .content-section {
+      width: 90%;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 15px;
+  }
+
+  .tables-container {
+      flex-direction: column;
+      align-items: center;
+      margin-right: 15px;
+  }
+
+  .table-container {
+      width: 90%;
+      max-width: 90%;
+      margin: 0 auto 0 auto;
+      border: 1px solid #444;
+  }
+
+  .large-number {
+      font-size: 32px;
+      margin-bottom: 5px;
+  }
+
+  .section-title {
+      font-size: 23px;
+      margin-bottom: 5px;
+  }
+
+  table th,
+  table td {
+      padding: 5px;
+      border: none;
+  }
+
+  .delete-button {
+      padding: 3px 6px;
+  }
+
+  .bottom-section {
+      width: 100%;
+      padding: 5px;
+  }
+}
+
+@media (max-width: 576px) { /* للشاشات الأصغر (الهواتف) */
+  .page-title {
+      font-size: 18px;
+  }
+
+  .sub-title {
+      font-size: 12px;
+  }
+
+  .table-container h3 {
+      font-size: 16px;
+  }
+
+  .table-container p {
+      font-size: 14px;
+  }
+}
+
+nav {
+  background-color: #1f1f1f;
+  padding: 10px;
+  text-align: center;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+  background-color: #2b2b2b;
+}
+
+nav ul li a.active {
+  background-color: #242424;
+  font-weight: bold;
+}
