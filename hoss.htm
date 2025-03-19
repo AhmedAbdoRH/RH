@@ -7,7 +7,7 @@
     <script type="module">
         // استيراد Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, query, where, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         // إعدادات Firebase
         const firebaseConfig = {
@@ -66,7 +66,7 @@
                     let data = doc.data();
                     if (data.name === employeeName) {
                         totalAbsence += data.type;
-                        records.push(data);
+                        records.push({ id: doc.id, ...data });
                     }
                 });
 
@@ -90,11 +90,28 @@
             }
         }
 
+        // دالة حذف جميع بيانات الغياب
+        async function clearData() {
+            try {
+                let q = query(collection(db, "absences"), where("name", "==", employeeName));
+                let snapshot = await getDocs(q);
+
+                snapshot.forEach(async (docRef) => {
+                    await deleteDoc(doc(db, "absences", docRef.id));
+                });
+
+                updateTable(); // تحديث الجدول بعد المسح
+            } catch (error) {
+                console.error("خطأ أثناء حذف البيانات:", error);
+            }
+        }
+
         // تحميل البيانات عند فتح الصفحة
         window.onload = updateTable;
 
         // جعل الدوال متاحة للـ HTML
         window.addAbsence = addAbsence;
+        window.clearData = clearData;
     </script>
 
     <style>
@@ -181,6 +198,8 @@
         <br>
         <small>الراتب المستحق: <span id="calculatedSalary">3000 جنيه</span></small>
     </div>
+
+    <button onclick="clearData()">مسح البيانات</button>
 
 </body>
 </html>
