@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الغياب - محمد حسام</title>
+    <script type="module">
+        // استيراد Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAunLxvASN6Cbsa_Nc6l78_5lMhe5fP2Qg",
+            authDomain: "momtn-ecab7.firebaseapp.com",
+            projectId: "momtn-ecab7",
+            storageBucket: "momtn-ecab7.appspot.com",
+            messagingSenderId: "98544311111",
+            appId: "1:98544311111:web:0158668f45ae34818fca62",
+            measurementId: "G-W164SZBMDP"
+        };
+
+        // تهيئة Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // اسم الموظف والراتب الأساسي
+        let employeeName = "محمد حسام";
+        let monthlySalary = 3000;
+        let workingDaysPerMonth = 24;
+
+        // دالة تسجيل الغياب
+        async function addAbsence() {
+            let absenceType = parseFloat(document.querySelector('input[name="absenceType"]:checked').value);
+            let reason = document.getElementById("reason").value;
+            let today = new Date().toLocaleDateString("ar-EG");
+
+            try {
+                await addDoc(collection(db, "absences"), {
+                    name: employeeName,
+                    date: today,
+                    type: absenceType,
+                    reason: reason
+                });
+
+                updateTable(); // تحديث الجدول بعد الإضافة
+            } catch (error) {
+                console.error("خطأ أثناء تسجيل الغياب:", error);
+            }
+        }
+
+        // دالة تحديث الجدول والراتب
+        async function updateTable() {
+            let tableBody = document.getElementById("absenceTable");
+            let totalAbsenceBox = document.getElementById("totalAbsence");
+            let salaryBox = document.getElementById("calculatedSalary");
+
+            tableBody.innerHTML = "";
+            let totalAbsence = 0;
+
+            try {
+                let snapshot = await getDocs(collection(db, "absences"));
+                let records = [];
+
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    if (data.name === employeeName) {
+                        totalAbsence += data.type;
+                        records.push(data);
+                    }
+                });
+
+                records.forEach(record => {
+                    let row = `<tr>
+                        <td>${record.date}</td>
+                        <td>${record.type === 1 ? "يوم كامل" : "نصف يوم"}</td>
+                        <td>${record.reason}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+                let attendanceDays = workingDaysPerMonth - totalAbsence;
+                let calculatedSalary = (attendanceDays / workingDaysPerMonth) * monthlySalary;
+
+                totalAbsenceBox.textContent = totalAbsence + " يوم";
+                salaryBox.textContent = calculatedSalary.toFixed(2) + " جنيه";
+
+            } catch (error) {
+                console.error("خطأ أثناء جلب البيانات:", error);
+            }
+        }
+
+        // تحميل البيانات عند فتح الصفحة
+        window.onload = updateTable;
+
+        // جعل الدوال متاحة للـ HTML
+        window.addAbsence = addAbsence;
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            background-color: #222;
+            color: white;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #333;
+            color: white;
+        }
+        th, td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #444;
+        }
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
+            background: #444;
+            color: white;
+            border: 1px solid #666;
+        }
+        button {
+            cursor: pointer;
+        }
+        .summary-box {
+            margin: 20px auto;
+            padding: 15px;
+            width: 200px;
+            background: #444;
+            border: 1px solid #666;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>تسجيل الغياب - محمد حسام</h2>
+
+    <label>نوع الغياب:</label>
+    <input type="radio" name="absenceType" value="1"> يوم كامل
+    <input type="radio" name="absenceType" value="0.5" checked> نصف يوم
+
+    <br>
+
+    <label>السبب:</label>
+    <select id="reason">
+        <option value="تأخر">تأخر</option>
+        <option value="اعتذار">اعتذار</option>
+        <option value="تأديبي">تأديبي</option>
+        <option value="إنتاجية ضعيفة">إنتاجية ضعيفة</option>
+    </select>
+
+    <br>
+
+    <button onclick="addAbsence()">تسجيل الغياب</button>
+
+    <h3>سجل الغياب</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>التاريخ</th>
+                <th>نوع الغياب</th>
+                <th>السبب</th>
+            </tr>
+        </thead>
+        <tbody id="absenceTable">
+        </tbody>
+    </table>
+
+    <div class="summary-box">
+        <strong>إجمالي الغياب:</strong>
+        <span id="totalAbsence">0 يوم</span>
+        <br>
+        <small>الراتب المستحق: <span id="calculatedSalary">3000 جنيه</span></small>
+    </div>
+
+</body>
+</html>
