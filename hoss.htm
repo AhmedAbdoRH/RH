@@ -24,10 +24,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // اسم الموظف والراتب الأساسي
+        // إعدادات الموظف
         let employeeName = "محمد حسام";
         let monthlySalary = 3000;
         let workingDaysPerMonth = 24;
+        let exchangeRate = 30; // افترضنا سعر الدولار = 30 جنيه
 
         // دالة تسجيل الغياب
         async function addAbsence() {
@@ -43,7 +44,7 @@
                     reason: reason
                 });
 
-                updateTable(); // تحديث الجدول بعد الإضافة
+                location.reload(); // تحديث الصفحة بالكامل بعد الإضافة
             } catch (error) {
                 console.error("خطأ أثناء تسجيل الغياب:", error);
             }
@@ -54,6 +55,7 @@
             let tableBody = document.getElementById("absenceTable");
             let totalAbsenceBox = document.getElementById("totalAbsence");
             let salaryBox = document.getElementById("calculatedSalary");
+            let salaryUSDBox = document.getElementById("calculatedSalaryUSD");
 
             tableBody.innerHTML = "";
             let totalAbsence = 0;
@@ -81,9 +83,11 @@
 
                 let attendanceDays = workingDaysPerMonth - totalAbsence;
                 let calculatedSalary = (attendanceDays / workingDaysPerMonth) * monthlySalary;
+                let calculatedSalaryUSD = (calculatedSalary / exchangeRate).toFixed(2);
 
                 totalAbsenceBox.textContent = totalAbsence + " يوم";
                 salaryBox.textContent = calculatedSalary.toFixed(2) + " جنيه";
+                salaryUSDBox.textContent = calculatedSalaryUSD + " دولار";
 
             } catch (error) {
                 console.error("خطأ أثناء جلب البيانات:", error);
@@ -100,7 +104,7 @@
                     await deleteDoc(doc(db, "absences", docRef.id));
                 });
 
-                updateTable(); // تحديث الجدول بعد المسح
+                location.reload(); // تحديث الصفحة بالكامل بعد الحذف
             } catch (error) {
                 console.error("خطأ أثناء حذف البيانات:", error);
             }
@@ -112,6 +116,19 @@
         // جعل الدوال متاحة للـ HTML
         window.addAbsence = addAbsence;
         window.clearData = clearData;
+
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function captureScreenshot() {
+            html2canvas(document.body).then(canvas => {
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "سجل الغياب.png";
+                link.click();
+            });
+        }
     </script>
 
     <style>
@@ -155,6 +172,10 @@
             border: 1px solid #666;
             font-size: 18px;
         }
+        .salary-usd {
+            font-size: 14px;
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
@@ -197,9 +218,12 @@
         <span id="totalAbsence">0 يوم</span>
         <br>
         <small>الراتب المستحق: <span id="calculatedSalary">3000 جنيه</span></small>
+        <br>
+        <small class="salary-usd">ما يعادل: <span id="calculatedSalaryUSD">100 دولار</span></small>
     </div>
 
     <button onclick="clearData()">مسح البيانات</button>
+    <button onclick="captureScreenshot()">حفظ التقرير كصورة</button>
 
 </body>
 </html>
