@@ -35,9 +35,9 @@
             try {
                 await addDoc(collection(db, "absences"), {
                     name: employeeName,
-                    date: today.toISOString(), // Store full ISO date for sorting
-                    displayDate: today.toLocaleDateString("ar-EG"), // For display
-                    type: absenceType,
+                    date: today.toISOString(), // للترتيب
+                    displayDate: today.toLocaleDateString("ar-EG"), // للعرض
+                    type: absenceType, // 0.5 أو 1
                     reason: reason,
                     isBonus: isBonus
                 });
@@ -56,9 +56,9 @@
             try {
                 await addDoc(collection(db, "absences"), {
                     name: employeeName,
-                    date: today.toISOString(), // Store full ISO date for sorting
-                    displayDate: today.toLocaleDateString("ar-EG"), // For display
-                    type: bonusType,
+                    date: today.toISOString(), // للترتيب
+                    displayDate: today.toLocaleDateString("ar-EG"), // للعرض
+                    type: bonusType, // 0.5 أو 1
                     reason: reason,
                     isBonus: isBonus
                 });
@@ -99,10 +99,11 @@
                     }
                 });
 
-                // Sort records by date (newest first)
+                // ترتيب السجلات حسب الأحدث أولاً
                 records.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 records.forEach(record => {
+                    let typeDisplay = record.type === 1 ? "يوم كامل" : "نص يوم"; // عرض صحيح بناءً على القيمة
                     if (record.isBonus) {
                         totalBonus += record.type;
                     } else {
@@ -110,7 +111,7 @@
                     }
                     let row = `<tr>
                         <td>${record.displayDate}</td>
-                        <td>${record.type === 1 ? "يوم كامل" : "نص يوم"} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
+                        <td>${typeDisplay} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
                         <td>${record.reason}</td>
                         <td><button class="delete-btn" onclick="deleteRecord('${record.id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`;
@@ -186,24 +187,24 @@
         }
 
         h2 {
-            color: #ffffff; /* White for top title */
+            color: #ffffff; /* White */
             margin-bottom: 30px;
             font-size: 2rem;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         h3.absence-title {
-            color: #800000; /* Deep Dark Red for absence section */
+            color: #800000; /* Deep Dark Red */
             margin-bottom: 20px;
         }
 
         h3.bonus-title {
-            color: #006400; /* Dark Green for bonus section */
+            color: #006400; /* Dark Green */
             margin-bottom: 20px;
         }
 
         h3.table-title {
-            color: #808080; /* Gray for table title */
+            color: #808080; /* Gray */
             margin-bottom: 20px;
         }
 
@@ -222,14 +223,14 @@
         label.absence-label {
             display: block;
             margin-bottom: 8px;
-            color: #800000; /* Deep Dark Red for absence labels */
+            color: #800000; /* Deep Dark Red */
             font-weight: 500;
         }
 
         label.bonus-label {
             display: block;
             margin-bottom: 8px;
-            color: #006400; /* Dark Green for bonus labels */
+            color: #006400; /* Dark Green */
             font-weight: 500;
         }
 
@@ -290,7 +291,7 @@
 
         th {
             background: #333333;
-            color: #808080; /* Gray for table headers */
+            color: #808080; /* Gray */
             font-weight: 600;
         }
 
@@ -310,7 +311,7 @@
         }
 
         .delete-btn:hover {
-            background: #600000; /* Darker Red for hover */
+            background: #600000; /* Darker Red */
         }
 
         .summary-card {
@@ -328,19 +329,19 @@
         }
 
         .summary-item.absence strong {
-            color: #800000; /* Deep Dark Red for absence summary */
+            color: #800000; /* Deep Dark Red */
             display: block;
             margin-bottom: 5px;
         }
 
         .summary-item.bonus strong {
-            color: #006400; /* Dark Green for bonus summary */
+            color: #006400; /* Dark Green */
             display: block;
             margin-bottom: 5px;
         }
 
         .summary-item.salary strong {
-            color: #808080; /* Gray for salary summary */
+            color: #808080; /* Gray */
             display: block;
             margin-bottom: 5px;
         }
@@ -367,8 +368,8 @@
             <h3 class="absence-title">تسجيل غياب</h3>
             <div class="input-group">
                 <label class="absence-label">نوع الغياب:</label>
-                <input type="radio" name="absenceType" value="1"> يوم كامل
-                <input type="radio" name="absenceType" value="0.5" checked> نص يوم
+                <input type="radio" name="absenceType" value="1"> نص يوم 
+                <input type="radio" name="absenceType" value="0.5" checked>  يوم كامل
             </div>
             <div class="input-group">
                 <label class="absence-label">السبب:</label>
@@ -386,8 +387,8 @@
             <h3 class="bonus-title">تسجيل بونص</h3>
             <div class="input-group">
                 <label class="bonus-label">نوع البونص:</label>
-                <input type="radio" name="bonusType" value="1"> يوم كامل
-                <input type="radio" name="bonusType" value="0.5" checked> نص يوم
+                <input type="radio" name="bonusType" value="1"> نص يوم
+                <input type="radio" name="bonusType" value="0.5" checked> يوم كامل
             </div>
             <div class="input-group">
                 <label class="bonus-label">السبب:</label>
