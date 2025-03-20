@@ -29,13 +29,14 @@
         async function addAbsence() {
             let absenceType = parseFloat(document.querySelector('input[name="absenceType"]:checked').value);
             let reason = document.getElementById("reason").value;
-            let today = new Date().toLocaleDateString("ar-EG");
+            let today = new Date();
             let isBonus = false;
 
             try {
                 await addDoc(collection(db, "absences"), {
                     name: employeeName,
-                    date: today,
+                    date: today.toISOString(), // Store full ISO date for sorting
+                    displayDate: today.toLocaleDateString("ar-EG"), // For display
                     type: absenceType,
                     reason: reason,
                     isBonus: isBonus
@@ -49,13 +50,14 @@
         async function addBonus() {
             let bonusType = parseFloat(document.querySelector('input[name="bonusType"]:checked').value);
             let reason = document.getElementById("bonusReason").value;
-            let today = new Date().toLocaleDateString("ar-EG");
+            let today = new Date();
             let isBonus = true;
 
             try {
                 await addDoc(collection(db, "absences"), {
                     name: employeeName,
-                    date: today,
+                    date: today.toISOString(), // Store full ISO date for sorting
+                    displayDate: today.toLocaleDateString("ar-EG"), // For display
                     type: bonusType,
                     reason: reason,
                     isBonus: isBonus
@@ -93,19 +95,22 @@
                 snapshot.forEach(doc => {
                     let data = doc.data();
                     if (data.name === employeeName) {
-                        if (data.isBonus) {
-                            totalBonus += data.type;
-                        } else {
-                            totalAbsence += data.type;
-                        }
                         records.push({ id: doc.id, ...data });
                     }
                 });
 
+                // Sort records by date (newest first)
+                records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
                 records.forEach(record => {
+                    if (record.isBonus) {
+                        totalBonus += record.type;
+                    } else {
+                        totalAbsence += record.type;
+                    }
                     let row = `<tr>
-                        <td>${record.date}</td>
-                        <td>${record.type === 1 ? "يوم كامل" : "نصف يوم"} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
+                        <td>${record.displayDate}</td>
+                        <td>${record.type === 1 ? "يوم كامل" : "نص يوم"} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
                         <td>${record.reason}</td>
                         <td><button class="delete-btn" onclick="deleteRecord('${record.id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`;
@@ -181,10 +186,10 @@
         }
 
         h2 {
-            color: #800000; /* Deep Dark Red */
+            color: #ffffff; /* White for top title */
             margin-bottom: 30px;
             font-size: 2rem;
-            text-shadow: 0 0 10px rgba(128, 0, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         h3.absence-title {
@@ -363,7 +368,7 @@
             <div class="input-group">
                 <label class="absence-label">نوع الغياب:</label>
                 <input type="radio" name="absenceType" value="1"> يوم كامل
-                <input type="radio" name="absenceType" value="0.5" checked> نصف يوم
+                <input type="radio" name="absenceType" value="0.5" checked> نص يوم
             </div>
             <div class="input-group">
                 <label class="absence-label">السبب:</label>
@@ -382,7 +387,7 @@
             <div class="input-group">
                 <label class="bonus-label">نوع البونص:</label>
                 <input type="radio" name="bonusType" value="1"> يوم كامل
-                <input type="radio" name="bonusType" value="0.5" checked> نصف يوم
+                <input type="radio" name="bonusType" value="0.5" checked> نص يوم
             </div>
             <div class="input-group">
                 <label class="bonus-label">السبب:</label>
