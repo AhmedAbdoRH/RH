@@ -95,6 +95,12 @@
       onValue(expensesRef, (snapshot) => {
         const expenses = snapshot.val();
         if (expenses) {
+          // مسح الجداول قبل إعادة التحميل
+          document.getElementById('operationalTable').innerHTML = '';
+          document.getElementById('purchasesTable').innerHTML = '';
+          totalPurchases = 0;
+          totalOperational = 0;
+
           Object.keys(expenses).forEach((expenseId) => {
             const expense = expenses[expenseId];
             const { name, cost, expenseType, date } = expense;
@@ -109,7 +115,13 @@
               <td>$${cost.toFixed(2)}</td>
               <td><button class="delete-button" onclick="deleteExpense(this, '${expenseType}', ${cost}, '${expenseId}')">حذف</button></td>
             `;
-            tableBody.appendChild(row);
+
+            // إضافة الصف في بداية الجدول بدلاً من نهايته
+            if (tableBody.firstChild) {
+              tableBody.insertBefore(row, tableBody.firstChild);
+            } else {
+              tableBody.appendChild(row);
+            }
 
             if (expenseType === 'purchases') totalPurchases += cost;
             else if (expenseType === 'operational') totalOperational += cost;
@@ -130,7 +142,7 @@
         <li><a href="sys.html" class="active">إدارة الدخل</a></li>  
         <li><a href="sys-out.html">إدارة النفقات</a></li>  
     </ul>  
-</nav>
+  </nav>
 
   <div class="container">
     <div class="header-section">
@@ -195,4 +207,6 @@
       </div>
     </div>
   </div>
-</
+</body>
+
+</html>
