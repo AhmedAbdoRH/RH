@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RHM SA CASH HUB</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
@@ -40,6 +41,7 @@
     .header-section {
       text-align: center;
       margin-bottom: 20px;
+      position: relative;
     }
 
     .page-title {
@@ -191,6 +193,9 @@
 <body>
   <div class="container">
     <div class="header-section">
+      <button id="shareButton" style="position: absolute; left: 20px; top: 20px; background-color: #1F1F1F; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+        <span>مشاركة</span>
+      </button>
       <div class="page-title">RHM SA CASH HUB</div>
     </div>
 
@@ -349,6 +354,28 @@
 
     document.getElementById("addPositive").addEventListener("click", () => addTransaction(true));
     document.getElementById("addNegative").addEventListener("click", () => addTransaction(false));
+
+    // مشاركة الصفحة كصورة
+    document.getElementById("shareButton").addEventListener("click", async () => {
+      try {
+        const canvas = await html2canvas(document.body);
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], "page-screenshot.png", { type: "image/png" });
+
+          if (navigator.share) {
+            await navigator.share({
+              title: "RHM SA CASH HUB",
+              text: "تحقق من هذه الصفحة!",
+              files: [file],
+            });
+          } else {
+            alert("عذرًا، مشاركة الملفات غير مدعومة في هذا المتصفح.");
+          }
+        });
+      } catch (error) {
+        console.error("Error sharing the page:", error);
+      }
+    });
 
     fetchExchangeRate();
     loadTransactions();
