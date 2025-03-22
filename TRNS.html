@@ -36,6 +36,7 @@
       padding: 20px;
       max-width: 1200px;
       margin: 0 auto;
+      background-color: #121212; /* خلفية سوداء */
     }
 
     .header-section {
@@ -160,19 +161,28 @@
     }
 
     .show-more-button {
-      background-color: #1e88e5;
+      background-color: #8B4513; /* لون سمراء */
       color: white;
-      padding: 10px 20px;
+      padding: 8px 16px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       margin-top: 10px;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
       margin: 20px auto;
     }
 
     .show-more-button:hover {
-      background-color: #2F4F4F;
+      background-color: #A0522D; /* لون سمراء أغمق */
+    }
+
+    .show-more-button::after {
+      content: "▼"; /* سهم لأسفل */
+      font-size: 12px;
     }
 
     @media (max-width: 600px) {
@@ -369,7 +379,7 @@
       // إظهار أو إخفاء زر "إظهار المزيد"
       const showMoreButton = document.getElementById("showMoreButton");
       if (allTransactions.length > visibleTransactions) {
-        showMoreButton.style.display = "block";
+        showMoreButton.style.display = "flex";
       } else {
         showMoreButton.style.display = "none";
       }
@@ -406,18 +416,18 @@
         const canvas = await html2canvas(container, {
           scrollY: -window.scrollY, // تجاهل التمرير
           useCORS: true, // السماح بتحميل الصور الخارجية
+          backgroundColor: "#121212", // خلفية سوداء
         });
 
         // تحويل Canvas إلى صورة (Blob)
         canvas.toBlob(async (blob) => {
           const file = new File([blob], "screenshot.png", { type: "image/png" });
 
-          // مشاركة الصورة مع الرابط
+          // مشاركة الصورة مع الرابط فقط
           if (navigator.share) {
             await navigator.share({
-              title: "RHM SA CASH HUB",
-              text: "تحقق من هذه الصفحة: https://RehlatHadaf.xyz/Trns",
               files: [file],
+              url: "https://RehlatHadaf.xyz/Trns", // الرابط فقط
             });
           } else {
             alert("عذرًا، مشاركة الملفات غير مدعومة في هذا المتصفح.");
