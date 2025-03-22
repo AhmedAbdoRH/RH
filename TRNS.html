@@ -358,18 +358,30 @@
     // مشاركة الصفحة كصورة
     document.getElementById("shareButton").addEventListener("click", async () => {
       try {
-        const canvas = await html2canvas(document.body);
+        // التقاط صورة للجزء الظاهر فقط (العنصر .container)
+        const container = document.querySelector(".container");
+        const canvas = await html2canvas(container);
+
+        // تحويل الصورة إلى Blob
         canvas.toBlob(async (blob) => {
           const file = new File([blob], "page-screenshot.png", { type: "image/png" });
 
+          // نص الرسالة مع الرابط
+          const message = "تحقق من هذه الصفحة: https://RehlatHadaf.xyz/Trns";
+
+          // مشاركة عبر واتساب بيزنس
+          const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, "_blank");
+
+          // إذا كنت تريد استخدام Web Share API (اختياري)
           if (navigator.share) {
             await navigator.share({
               title: "RHM SA CASH HUB",
-              text: "تحقق من هذه الصفحة!",
+              text: message,
               files: [file],
             });
           } else {
-            alert("عذرًا، مشاركة الملفات غير مدعومة في هذا المتصفح.");
+            console.log("Web Share API غير مدعوم في هذا المتصفح.");
           }
         });
       } catch (error) {
