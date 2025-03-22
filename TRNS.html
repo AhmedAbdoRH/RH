@@ -338,6 +338,11 @@
       // ترتيب العمليات تنازليًا بناءً على الطابع الزمني
       allTransactions.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
+      // حساب الرصيد الكلي من جميع العمليات
+      allTransactions.forEach(transaction => {
+        totalIncome += transaction.cost;
+      });
+
       updateTable();
       updateTotal();
     }
@@ -350,8 +355,6 @@
       const transactionsToShow = allTransactions.slice(0, visibleTransactions);
 
       transactionsToShow.forEach(transaction => {
-        totalIncome += transaction.cost;
-
         const row = `
           <tr>
             <td>${transaction.name}</td>
