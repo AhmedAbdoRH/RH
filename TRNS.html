@@ -321,7 +321,10 @@
       // ترتيب العمليات تنازليًا بناءً على الطابع الزمني
       transactions.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
-      transactions.forEach(transaction => {
+      // عرض آخر 7 عمليات فقط
+      const last7Transactions = transactions.slice(0, 7);
+
+      last7Transactions.forEach(transaction => {
         totalIncome += transaction.cost;
 
         const row = `
@@ -355,7 +358,7 @@
     document.getElementById("addPositive").addEventListener("click", () => addTransaction(true));
     document.getElementById("addNegative").addEventListener("click", () => addTransaction(false));
 
-    // مشاركة الجزء الظاهر فقط والرابط
+    // مشاركة الصورة مع الرابط
     document.getElementById("shareButton").addEventListener("click", async () => {
       try {
         const container = document.querySelector(".container");
@@ -368,11 +371,15 @@
         canvas.toBlob(async (blob) => {
           const file = new File([blob], "screenshot.png", { type: "image/png" });
 
-          // مشاركة الرابط فقط
+          // إنشاء رابط للصورة
+          const imageUrl = URL.createObjectURL(file);
+
+          // مشاركة الصورة مع الرابط
           if (navigator.share) {
             await navigator.share({
               title: "RHM SA CASH HUB",
-              url: "https://RehlatHadaf.xyz/Trns", // الرابط المطلوب
+              text: "تحقق من هذه الصفحة: https://RehlatHadaf.xyz/Trns",
+              files: [file],
             });
           } else {
             alert("عذرًا، مشاركة الملفات غير مدعومة في هذا المتصفح.");
