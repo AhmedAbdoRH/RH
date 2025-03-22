@@ -24,20 +24,20 @@
         let employeeName = "أحمد أبو العزم";
         let monthlySalary = 52; // الراتب بالدولار
         let workingDaysPerMonth = 8; // يومان في الأسبوع
-        let exchangeRate = 50،27; // سعر الصرف الافتراضي
+        let exchangeRate = 50.27; // سعر الصرف الافتراضي
 
-        // جلب سعر الصرف الحالي
+        // جلب سعر الصرف الحالي من Open Exchange Rates
         async function fetchExchangeRate() {
-            const apiKey = "YOUR_EXCHANGERATE_API_KEY"; // استبدل بمفتاح API الخاص بك
-            const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
+            const apiKey = "YOUR_OPEN_EXCHANGE_RATES_API_KEY"; // استبدل بمفتاح API الخاص بك
+            const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                if (data.result === "success") {
-                    exchangeRate = data.conversion_rates.EGP; // تحديث سعر الصرف
+                if (data.rates && data.rates.EGP) {
+                    exchangeRate = data.rates.EGP; // تحديث سعر الصرف
                 } else {
-                    console.error("فشل في جلب سعر الصرف:", data.error);
+                    console.error("فشل في جلب سعر الصرف: البيانات غير متوفرة");
                 }
             } catch (error) {
                 console.error("خطأ في الاتصال بالخادم:", error);
