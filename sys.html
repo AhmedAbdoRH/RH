@@ -111,6 +111,16 @@
       onValue(projectsRef, (snapshot) => {
         const projects = snapshot.val();
         if (projects) {
+          // إعادة تهيئة المجاميع قبل إعادة الحساب
+          totalSaudi = 0;
+          totalMah = 0;
+          totalEgypt = 0;
+
+          // مسح الجداول قبل إعادة التحميل
+          document.getElementById('egyptProjectsTable').innerHTML = '';
+          document.getElementById('saudiProjectsTable').innerHTML = '';
+          document.getElementById('mahProjectsTable').innerHTML = '';
+
           Object.keys(projects).forEach((projectId) => {
             const project = projects[projectId];
             const { name, cost, projectType, date } = project;
@@ -150,16 +160,31 @@
   </script>
   <link rel="stylesheet" href="styles SYS.css">
   <title>مكتب رحلة هدف لخدمات التسويق</title>
+  <style>
+    .delete-button {
+      padding: 5px 8px;
+      font-size: 0.8em;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .delete-button:hover {
+      background-color: #555;
+    }
+  </style>
 </head>
 
 <body>
 
- <nav>  
-    <ul>  
-        <li><a href="sys.html" class="active">إدارة الدخل</a></li>  
-        <li><a href="sys-out.html">إدارة النفقات</a></li>  
-    </ul>  
-</nav>
+  <nav>
+    <ul>
+      <li><a href="sys.html" class="active">إدارة الدخل</a></li>
+      <li><a href="sys-out.html">إدارة النفقات</a></li>
+    </ul>
+  </nav>
 
   <div class="container">
     <div class="header-section">
