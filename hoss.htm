@@ -132,7 +132,7 @@
             }
         }
 
-              async function clearData() {
+        async function clearData() {
             try {
                 let q = query(collection(db, "absences"), where("name", "==", employeeName));
                 let snapshot = await getDocs(q);
@@ -143,6 +143,7 @@
             } catch (error) {
                 console.error("خطأ أثناء حذف البيانات:", error);
             }
+        }
 
         window.onload = updateTable;
         window.addAbsence = addAbsence;
