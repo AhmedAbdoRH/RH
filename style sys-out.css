@@ -1,299 +1,405 @@
-/* 
-  تنسيق عام للصفحة 
-*/
-body {
-  font-family: Arial, sans-serif; /* نوع الخط المستخدم في الصفحة */
-  margin: 0; /* إزالة الهوامش الافتراضية */
-  padding: 0; /* إزالة الحشو الافتراضي */
-  background-color: #121212; /* لون خلفية الصفحة (أسود داكن) */
-  color: #ffffff; /* لون النصوص في الصفحة (أبيض) */
-  display: flex; /* استخدام flexbox لترتيب العناصر */
-  flex-direction: column; /* ترتيب العناصر بشكل عمودي */
-  align-items: center; /* محاذاة العناصر في المنتصف أفقياً */
-  min-height: 100vh; /* جعل ارتفاع الصفحة على الأقل بارتفاع الشاشة */
-  text-align: right; /* محاذاة النصوص إلى اليمين */
-  direction: rtl; /* اتجاه الصفحة من اليمين إلى اليسار */
-}
+    /*
+      تنسيق عام للصفحة
+    */
+    body {
+      font-family: Arial, sans-serif; /* نوع الخط المستخدم في الصفحة */
+      margin: 0; /* إزالة الهوامش الافتراضية */
+      padding: 0; /* إزالة الحشو الافتراضي */
+      background-color: #121212; /* لون خلفية الصفحة (أسود داكن) */
+      color: #ffffff; /* لون النصوص في الصفحة (أبيض) */
+      display: flex; /* استخدام flexbox لترتيب العناصر */
+      flex-direction: column; /* ترتيب العناصر بشكل عمودي */
+      align-items: center; /* محاذاة العناصر في المنتصف أفقياً */
+      min-height: 100vh; /* جعل ارتفاع الصفحة على الأقل بارتفاع الشاشة */
+      text-align: right; /* محاذاة النصوص إلى اليمين */
+      direction: rtl; /* اتجاه الصفحة من اليمين إلى اليسار */
+    }
 
-/* 
-تنسيق الحاوية الرئيسية 
-*/
-.container {
-  width: 100%; /* جعل عرض الحاوية بعرض الصفحة */
-  max-width: 1200px; /* تحديد أقصى عرض للحاوية */
-  padding: 0px; /* إزالة الحشو */
-  background-color: #1e1e1e; /* لون خلفية الحاوية (رمادي داكن) */
-  border-radius: 0; /* إزالة أي انحناءات من زوايا الحاوية */
-  box-shadow: none; /* إزالة أي ظل من الحاوية */
-}
+    /*
+    تنسيق الحاوية الرئيسية
+    */
+    .container {
+      width: 100%; /* جعل عرض الحاوية بعرض الصفحة */
+      max-width: 1200px; /* تحديد أقصى عرض للحاوية */
+      padding: 0px; /* إزالة الحشو */
+      background-color: #1e1e1e; /* لون خلفية الحاوية (رمادي داكن) */
+      border-radius: 0; /* إزالة أي انحناءات من زوايا الحاوية */
+      box-shadow: none; /* إزالة أي ظل من الحاوية */
+    }
 
-/* 
-تنسيق أقسام الصفحة 
-*/
-.header-section {  /* تنسيق قسم رأس الصفحة */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
-  margin-top: 20px;
-}
-
-.page-title { /* تنسيق عنوان الصفحة */
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 0px;
-}
-
-.sub-title { /* تنسيق العنوان الفرعي */
-  font-size: 14px;
-  color: #aaa;
-  margin-bottom: 0px;
-}
-
-.top-section { /* تنسيق القسم العلوي */
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-bottom: 0px;
-  width: 100%;
-  flex-direction: column;
-}
-
-.content-section { /* تنسيق قسم المحتوى */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.centralized-content { /* تنسيق المحتوى في المنتصف */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.bottom-section { /* تنسيق القسم السفلي */
-  margin: 5px -20px -7px -72px;
-  width: 100%;
-  background-color: #141414;
-  max-width: 1000px;
-  padding: 42px;
-  align-items: center;
-}
-
-.section-title { /* تنسيق عنوان القسم */
-  font-size: 26px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 10px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.input-section { /* تنسيق قسم الإدخال */
-  margin-top: 10px;
-  text-align: center;
-  padding: 10px;
-  margin-top: 20px;
-}
-
-.input-section input,
-.input-section button {
-  margin: 5px;
-  padding: 10px;
-  border: 1px solid #444;
-  border-radius: 5px;
-  background-color: #2c2c2c;
-  color: #ffffff;
-  font-size: 14px;
-}
-
-.tables-container { /* تنسيق حاوية الجداول */
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding: 25px;
-  flex-direction: row;
-}
-
-.table-container { /* تنسيق حاوية الجدول */
-  flex: 1;
-  max-width: 48%; /* جعل الجداول تأخذ نصف المساحة تقريبًا */
-  background-color: #2c2c2c;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-/* 
-تنسيق الجداول 
-*/
-table { /* تنسيق الجدول */
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th, /* تنسيق خلايا الجدول */
-table td {
-  padding: 10px;
-  border: 1px solid #444;
-  text-align: right;
-}
-
-table th { /* تنسيق خلايا رأس الجدول */
-  background-color: #444;
-}
-
-table tr:nth-child(even) { /* تنسيق الصفوف الزوجية */
-  background-color: #333;
-}
-
-table tr:nth-child(odd) { /* تنسيق الصفوف الفردية */
-  background-color: #222;
-}
-
-.delete-button { /* تنسيق زر الحذف */
-  background-color: #666;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.delete-button:hover {
-  background-color: #555;
-}
-
-/* 
-تنسيقات إضافية 
-*/
-.large-number { /* تنسيق الأرقام الكبيرة */
-  font-size: 48px;
-  font-weight: bold;
-  color: #ff4444; /* لون أحمر داكن */
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.totals-under { /* تنسيق السطور تحت الحساب الإجمالي */
-  margin-top: 10px;
-  text-align: center;
-  font-size: 18px;
-  color: #aaa;
-}
-
-.totals-under p {
-  margin: 5px 0;
-}
-
-/* 
-تنسيقات متجاوبة 
-*/
-@media (max-width: 768px) { /* للشاشات الصغيرة (الأجهزة اللوحية) */
-  .top-section {
+    /*
+    تنسيق أقسام الصفحة
+    */
+    .header-section {  /* تنسيق قسم رأس الصفحة */
+      display: flex;
       flex-direction: column;
       align-items: center;
-  }
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
 
-  .content-section {
-      width: 90%;
-      flex-direction: column;
-      align-items: center;
-      margin-right: 15px;
-  }
+    .page-title { /* تنسيق عنوان الصفحة */
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 0px;
+    }
 
-  .tables-container {
-      flex-direction: column;
-      align-items: center;
-      margin-right: 15px;
-  }
-
-  .table-container {
-      width: 90%;
-      max-width: 90%;
-      margin: 0 auto 0 auto;
-      border: 1px solid #444;
-  }
-
-  .large-number {
-      font-size: 32px;
-      margin-bottom: 5px;
-  }
-
-  .section-title {
-      font-size: 23px;
-      margin-bottom: 5px;
-  }
-
-  table th,
-  table td {
-      padding: 5px;
-      border: none;
-  }
-
-  .delete-button {
-      padding: 3px 6px;
-  }
-
-  .bottom-section {
-      width: 100%;
-      padding: 5px;
-  }
-}
-
-@media (max-width: 576px) { /* للشاشات الأصغر (الهواتف) */
-  .page-title {
-      font-size: 18px;
-  }
-
-  .sub-title {
-      font-size: 12px;
-  }
-
-  .table-container h3 {
-      font-size: 16px;
-  }
-
-  .table-container p {
+    .sub-title { /* تنسيق العنوان الفرعي */
       font-size: 14px;
-  }
-}
+      color: #aaa;
+      margin-bottom: 0px;
+      /* Ensure editable styles don't conflict excessively */
+      border: none; /* Remove border if any */
+      outline: none; /* Remove outline on focus */
+      padding: 5px; /* Add some padding */
+      cursor: text; /* Indicate it's editable */
+      display: inline-block; /* Allow editing */
+      min-width: 150px; /* Ensure minimum width */
+      text-align: center; /* Center the text */
+      background-color: transparent; /* Match background or make transparent */
+    }
+    .sub-title:focus {
+        background-color: #333; /* Darker background on focus for dark theme */
+        border-radius: 4px;
+    }
 
-nav {
-  background-color: #1f1f1f;
-  padding: 10px;
-  text-align: center;
-}
 
-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-}
+    .top-section { /* تنسيق القسم العلوي */
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 0px;
+      width: 100%;
+      flex-direction: column;
+    }
 
-nav ul li {
-  margin: 0 15px;
-}
+    .content-section { /* تنسيق قسم المحتوى */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-}
+    .centralized-content { /* تنسيق المحتوى في المنتصف */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-nav ul li a:hover {
-  background-color: #2b2b2b;
-}
+    .bottom-section { /* تنسيق القسم السفلي */
+      /* Adjusted margin and padding for better consistency */
+      margin: 20px auto; /* Center the section with top/bottom margin */
+      width: 95%; /* Slightly less than 100% */
+      background-color: #141414;
+      max-width: 1000px; /* Keep max-width */
+      padding: 20px; /* Standard padding */
+      border-radius: 8px; /* Add some rounding */
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
 
-nav ul li a.active {
-  background-color: #242424;
-  font-weight: bold;
-}
+
+    .section-title { /* تنسيق عنوان القسم */
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 20px; /* Increased margin */
+      text-align: center;
+      margin-top: 20px;
+      padding-bottom: 10px; /* Add padding below */
+      border-bottom: 1px solid #444; /* Add a subtle separator */
+    }
+
+    .input-section { /* تنسيق قسم الإدخال */
+      margin-top: 10px;
+      text-align: center;
+      padding: 20px; /* Increased padding */
+      margin-top: 20px;
+      background-color: #2c2c2c; /* Background for the section */
+      border-radius: 8px; /* Rounded corners */
+      display: flex; /* Use flexbox for better alignment */
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      gap: 10px; /* Space between items */
+      justify-content: center; /* Center items */
+      align-items: center; /* Align items vertically */
+    }
+
+
+    .input-section input[type="text"],
+    .input-section input[type="number"] {
+      margin: 5px;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #333; /* Slightly different background */
+      color: #ffffff;
+      font-size: 14px;
+      flex-grow: 1; /* Allow inputs to take available space */
+      min-width: 150px; /* Minimum width */
+    }
+
+     .input-section div { /* Style the radio button container */
+        display: flex;
+        gap: 15px; /* Space between radio buttons */
+        align-items: center;
+        color: #ccc; /* Lighter text color for labels */
+     }
+
+     .input-section label {
+         margin-left: 5px; /* Space between radio and label */
+     }
+
+    .input-section button {
+      margin: 5px;
+      padding: 10px 20px; /* More padding */
+      border: none; /* Remove border */
+      border-radius: 5px;
+      background-color: #555; /* Button color */
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer; /* Add pointer cursor */
+      transition: background-color 0.3s ease; /* Smooth transition */
+    }
+
+    .input-section button:hover {
+        background-color: #666; /* Lighter on hover */
+    }
+
+    .tables-container { /* تنسيق حاوية الجداول */
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      margin-top: 30px; /* Increased margin */
+      padding: 0px; /* Remove padding here, added to table-container */
+      flex-wrap: wrap; /* Allow tables to wrap */
+    }
+
+    .table-container { /* تنسيق حاوية الجدول */
+      flex: 1 1 45%; /* Allow flex grow/shrink, basis 45% */
+      min-width: 300px; /* Minimum width before wrapping */
+      background-color: #2c2c2c;
+      padding: 15px; /* Add padding */
+      border-radius: 8px;
+      margin-bottom: 20px; /* Add space below when wrapped */
+      box-sizing: border-box;
+    }
+
+    .table-container h3 { /* Add styling for table titles */
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #eee;
+        margin-bottom: 15px;
+        text-align: center;
+        border-bottom: 1px solid #444;
+        padding-bottom: 8px;
+    }
+
+
+    /*
+    تنسيق الجداول
+    */
+    table { /* تنسيق الجدول */
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th, /* تنسيق خلايا الجدول */
+    table td {
+      padding: 12px 10px; /* Adjusted padding */
+      border: 1px solid #444;
+      text-align: right;
+    }
+
+    table th { /* تنسيق خلايا رأس الجدول */
+      background-color: #444;
+      color: #fff; /* White text for header */
+      font-weight: bold; /* Bold header text */
+    }
+
+    /* Remove alternating colors if not desired, or adjust */
+    table tr {
+       background-color: #333; /* Default row color */
+       border-bottom: 1px solid #444; /* Separator line */
+    }
+
+    table tr:last-child td {
+        border-bottom: none; /* Remove border from last row */
+    }
+
+
+    table tr:hover { /* Hover effect for rows */
+        background-color: #3f3f3f;
+    }
+
+
+    .delete-button { /* تنسيق زر الحذف */
+      background-color: #e53e3e; /* Red color for delete */
+      color: #fff;
+      border: none;
+      padding: 6px 12px; /* Adjusted padding */
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease; /* Smooth transition */
+      font-size: 0.9rem; /* Slightly smaller font */
+    }
+
+
+    .delete-button:hover {
+      background-color: #c53030; /* Darker red on hover */
+    }
+
+    /*
+    تنسيقات إضافية
+    */
+    .large-number { /* تنسيق الأرقام الكبيرة */
+      font-size: 3rem; /* Adjusted size */
+      font-weight: bold;
+      color: #ff6b6b; /* Brighter red color */
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .totals-under { /* تنسيق السطور تحت الحساب الإجمالي */
+      margin-top: 15px; /* Increased margin */
+      text-align: center;
+      font-size: 1.1rem; /* Adjusted size */
+      color: #bbb; /* Lighter gray */
+    }
+
+    .totals-under p {
+      margin: 8px 0; /* Increased margin */
+    }
+
+    /*
+    تنسيقات متجاوبة
+    */
+    @media (max-width: 768px) { /* للشاشات الصغيرة (الأجهزة اللوحية) */
+      .container {
+          padding: 0; /* Remove padding on smaller screens if needed */
+      }
+      .bottom-section {
+          width: 95%;
+          padding: 15px;
+          margin: 15px auto;
+      }
+      .tables-container {
+          flex-direction: column; /* Stack tables vertically */
+          align-items: center; /* Center tables */
+          gap: 15px;
+      }
+      .table-container {
+          flex: 1 1 90%; /* Take more width when stacked */
+          max-width: 90%;
+          min-width: unset; /* Remove min-width */
+      }
+      .input-section {
+          padding: 15px;
+      }
+      .large-number {
+          font-size: 2.5rem;
+      }
+      .section-title {
+          font-size: 1.5rem; /* Smaller title */
+      }
+      .totals-under {
+          font-size: 1rem;
+      }
+      nav ul {
+          flex-direction: column; /* Stack nav items */
+          gap: 5px;
+      }
+      nav ul li {
+          margin: 5px 0;
+      }
+    }
+
+    @media (max-width: 576px) { /* للشاشات الأصغر (الهواتف) */
+      body {
+          /* Adjust base font size for smaller screens if needed */
+          /* font-size: 14px; */
+      }
+      .page-title {
+          font-size: 1.5rem;
+      }
+      .sub-title {
+          font-size: 0.9rem;
+      }
+      .large-number {
+          font-size: 2rem;
+      }
+      .section-title {
+          font-size: 1.3rem;
+      }
+      .input-section {
+          flex-direction: column; /* Stack inputs vertically */
+          align-items: stretch; /* Stretch items */
+      }
+      .input-section input[type="text"],
+      .input-section input[type="number"],
+      .input-section button {
+          width: 90%; /* Make inputs/button take more width */
+          margin: 5px auto; /* Center them */
+      }
+       .input-section div { /* Center radio buttons */
+           justify-content: center;
+       }
+      .table-container h3 {
+          font-size: 1.1rem;
+      }
+      table th, table td {
+          padding: 8px 5px; /* Reduce padding */
+          font-size: 0.9rem; /* Smaller font in table */
+      }
+      .delete-button {
+          padding: 4px 8px;
+          font-size: 0.8rem;
+      }
+      nav ul li a {
+          font-size: 1rem; /* Smaller nav links */
+          padding: 8px 15px;
+      }
+    }
+
+    /* Navigation Bar Styles */
+    nav {
+      width: 100%; /* Make nav full width */
+      background-color: #1f1f1f;
+      padding: 10px 0; /* Vertical padding only */
+      text-align: center;
+      box-sizing: border-box;
+      margin-bottom: 20px; /* Add space below nav */
+    }
+
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap; /* Allow wrapping on small screens */
+    }
+
+    nav ul li {
+      margin: 5px 15px; /* Add vertical margin for wrapping */
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem; /* Adjusted size */
+      padding: 10px 15px; /* Adjusted padding */
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      display: inline-block; /* Ensure padding is applied correctly */
+    }
+
+    nav ul li a:hover {
+      background-color: #2b2b2b;
+    }
+
+    nav ul li a.active {
+      background-color: #444; /* Darker active background */
+      font-weight: bold;
+    }
+
