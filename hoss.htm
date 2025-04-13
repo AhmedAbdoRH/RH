@@ -23,7 +23,7 @@
         let employeeName = "محمد حسام";
         let monthlySalary = 3000;
         let workingDaysPerMonth = 24;
-        let exchangeRate = 30;
+        let exchangeRate = 51;
 
         async function addAbsence() {
             let absenceType = parseFloat(document.querySelector('input[name="absenceType"]:checked').value);
@@ -373,9 +373,9 @@
             <div class="input-group">
                 <label class="absence-label">السبب:</label>
                 <select id="reason">
+                    <option value=اعتذار">اعتذار</option>
                     <option value="تأخر">تأخر</option>
-                    <option value="اعتذار">اعتذار</option>
-                    <option value="تأديبي">تأديبي</option>
+                    <option value=جزا">جزا</option>
                     <option value="إنتاجية ضعيفة">إنتاجية ضعيفة</option>
                 </select>
             </div>
