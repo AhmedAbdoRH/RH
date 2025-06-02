@@ -28,8 +28,14 @@
         async function addAbsence() {
             let absenceType = parseFloat(document.querySelector('input[name="absenceType"]:checked').value);
             let reason = document.getElementById("reason").value;
+            let description = document.getElementById("absenceDescription").value;
             let today = new Date();
             let isBonus = false;
+
+            if (!description) {
+                alert("الرجاء إدخال وصف تفصيلي للغياب");
+                return;
+            }
 
             try {
                 await addDoc(collection(db, "absences"), {
@@ -38,8 +44,10 @@
                     displayDate: today.toLocaleDateString("ar-EG"), // للعرض
                     type: absenceType, // 0.5 أو 1
                     reason: reason,
+                    description: description,
                     isBonus: isBonus
                 });
+                document.getElementById("absenceDescription").value = ""; // Clear the description field
                 location.reload();
             } catch (error) {
                 console.error("خطأ أثناء تسجيل الغياب:", error);
@@ -49,8 +57,14 @@
         async function addBonus() {
             let bonusType = parseFloat(document.querySelector('input[name="bonusType"]:checked').value);
             let reason = document.getElementById("bonusReason").value;
+            let description = document.getElementById("bonusDescription").value;
             let today = new Date();
             let isBonus = true;
+
+            if (!description) {
+                alert("الرجاء إدخال وصف تفصيلي للبونص");
+                return;
+            }
 
             try {
                 await addDoc(collection(db, "absences"), {
@@ -59,8 +73,10 @@
                     displayDate: today.toLocaleDateString("ar-EG"), // للعرض
                     type: bonusType, // 0.5 أو 1
                     reason: reason,
+                    description: description,
                     isBonus: isBonus
                 });
+                document.getElementById("bonusDescription").value = ""; // Clear the description field
                 location.reload();
             } catch (error) {
                 console.error("خطأ أثناء تسجيل البونص:", error);
@@ -111,7 +127,10 @@
                     let row = `<tr>
                         <td>${record.displayDate}</td>
                         <td>${typeDisplay} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
-                        <td>${record.reason}</td>
+                        <td>
+                            <div><strong>${record.reason}</strong></div>
+                            <div style="color: #aaa; font-size: 0.9em; margin-top: 5px;">${record.description || 'لا يوجد وصف'}</div>
+                        </td>
                         <td><button class="delete-btn" onclick="deleteRecord('${record.id}')"><i class="fas fa-trash"></i></button></td>
                     </tr>`;
                     tableBody.innerHTML += row;
@@ -173,8 +192,8 @@
         }
 
         body {
-            background: #1a1a1a;
-            color: #e0e0e0;
+            background: #000000;
+            color: #f0f0f0;
             padding: 20px;
             line-height: 1.6;
             text-align: center;
@@ -186,20 +205,23 @@
         }
 
         h2 {
-            color: #ffffff; /* White */
+            color: #ffffff;
             margin-bottom: 30px;
-            font-size: 2rem;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            font-size: 2.2rem;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
         }
 
         h3.absence-title {
-            color: #800000; /* Deep Dark Red */
+            color: #ff0000; /* Brighter Red */
             margin-bottom: 20px;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
         }
 
         h3.bonus-title {
-            color: #006400; /* Dark Green */
+            color: #00ff00; /* Brighter Green */
             margin-bottom: 20px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
         }
 
         h3.table-title {
@@ -208,11 +230,12 @@
         }
 
         .card {
-            background: #262626;
-            border-radius: 15px;
-            padding: 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
         }
 
         .input-group {
@@ -222,30 +245,43 @@
         label.absence-label {
             display: block;
             margin-bottom: 8px;
-            color: #800000; /* Deep Dark Red */
-            font-weight: 500;
+            color: #ff6b6b; /* Softer Red */
+            font-weight: 600;
+            font-size: 1.05em;
         }
 
         label.bonus-label {
             display: block;
             margin-bottom: 8px;
-            color: #006400; /* Dark Green */
-            font-weight: 500;
+            color: #4caf50; /* Softer Green */
+            font-weight: 600;
+            font-size: 1.05em;
         }
 
         input[type="radio"] {
             margin: 0 5px;
+            transform: scale(1.2);
+            cursor: pointer;
         }
 
-        select {
-            width: 200px;
-            padding: 10px;
-            background: #333333;
-            border: none;
+        select, input[type="text"] {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
             border-radius: 8px;
-            color: #e0e0e0;
+            color: #f0f0f0;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1em;
+            margin: 5px 0;
+        }
+        
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
         }
 
         select:hover {
@@ -253,15 +289,17 @@
         }
 
         button {
-            padding: 12px 25px;
-            background: #808080; /* Gray */
+            padding: 12px 30px;
+            background: #4a4a4a;
             border: none;
             border-radius: 8px;
-            color: #262626;
+            color: #ffffff;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            margin: 5px;
+            margin: 10px 5px;
+            font-size: 1em;
+            letter-spacing: 0.5px;
         }
 
         button:hover {
@@ -286,27 +324,40 @@
         th, td {
             padding: 15px;
             border-bottom: 1px solid #333333;
+            vertical-align: top;
+        }
+
+        td {
+            max-width: 300px;
+            word-wrap: break-word;
         }
 
         th {
-            background: #333333;
-            color: #808080; /* Gray */
+            background: #2a2a2a;
+            color: #e0e0e0;
             font-weight: 600;
+            font-size: 1.1em;
+            padding: 15px 10px;
+            border-bottom: 2px solid #444;
         }
 
         .bonus-tag {
-            background: #006400; /* Dark Green */
-            color: #e0e0e0;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
+            background: #2e7d32; /* Softer Green */
+            color: #ffffff;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
             margin-right: 5px;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .delete-btn {
-            background: #800000; /* Deep Dark Red */
+            background: #ff0000; /* Brighter Red */
             padding: 8px;
             min-width: 40px;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
         }
 
         .delete-btn:hover {
@@ -328,30 +379,41 @@
         }
 
         .summary-item.absence strong {
-            color: #800000; /* Deep Dark Red */
+            color: #ff0000; /* Brighter Red */
             display: block;
             margin-bottom: 5px;
+            font-size: 1.2em;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
         }
 
         .summary-item.bonus strong {
-            color: #006400; /* Dark Green */
+            color: #00ff00; /* Brighter Green */
             display: block;
             margin-bottom: 5px;
+            font-size: 1.2em;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
         }
 
         .summary-item.salary strong {
-            color: #808080; /* Gray */
+            color: #64b5f6; /* Light Blue */
             display: block;
             margin-bottom: 5px;
+            font-size: 1.2em;
+            text-shadow: 0 0 8px rgba(100, 181, 246, 0.3);
         }
 
         .summary-item span {
-            font-size: 1.2em;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: block;
+            margin-top: 5px;
         }
 
         .usd-value {
-            color: #a0a0a0;
-            font-size: 0.9em;
+            color: #90caf9;
+            font-size: 1em;
+            margin-top: 5px;
+            font-weight: 500;
         }
 
         .action-buttons {
@@ -373,11 +435,15 @@
             <div class="input-group">
                 <label class="absence-label">السبب:</label>
                 <select id="reason">
-                    <option value=اعتذار">اعتذار</option>
+                    <option value="اعتذار">اعتذار</option>
                     <option value="تأخر">تأخر</option>
-                    <option value=جزا">جزا</option>
+                    <option value="جزاء">جزاء</option>
                     <option value="إنتاجية ضعيفة">إنتاجية ضعيفة</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <label class="absence-label">تفاصيل السبب:</label>
+                <input type="text" id="absenceDescription" placeholder="أدخل وصفًا تفصيليًا لسبب الخصم" style="width: 300px; padding: 10px; background: #333; border: 1px solid #444; border-radius: 8px; color: #fff;">
             </div>
             <button onclick="addAbsence()">تسجيل الغياب</button>
         </div>
@@ -397,6 +463,10 @@
                     <option value="مبادرة">مبادرة</option>
                     <option value="أداء احترافي">أداء احترافي</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <label class="bonus-label">تفاصيل السبب:</label>
+                <input type="text" id="bonusDescription" placeholder="أدخل وصفًا تفصيليًا للبونص" style="width: 300px; padding: 10px; background: #333; border: 1px solid #444; border-radius: 8px; color: #fff;">
             </div>
             <button onclick="addBonus()">تسجيل البونص</button>
         </div>
