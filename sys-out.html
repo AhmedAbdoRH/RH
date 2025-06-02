@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1CAxFydEJojwNj6shU48ezSC-6aZqQu8",
+      authDomain: "rhm-fsystem.firebaseapp.com",
+      databaseURL: "https://rhm-fsystem-default-rtdb.firebaseio.com",
+      projectId: "rhm-fsystem",
+      storageBucket: "rhm-fsystem.firebasestorage.app",
+      messagingSenderId: "605865103602",
+      appId: "1:605865103602:web:bdea570bff282adc04406b",
+      measurementId: "G-QHFN5RRHDB"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // تعريف المتغيرات العامة
+    let totalPurchases = 0; // إجمالي المشتريات
+    let totalOperational = 0; // إجمالي المصارف التشغيلية
+
+    // تحميل البيانات عند بدء التحميل
+    document.addEventListener('DOMContentLoaded', loadData);
+
+    // إضافة مسار إنفاق جديد
+    window.addExpense = function () {
+      const name = document.getElementById('expenseName').value.trim();
+      const cost = parseFloat(document.getElementById('expenseCost').value);
+      const expenseType = document.querySelector('input[name="expenseType"]:checked').value;
+
+      if (!name || isNaN(cost) || cost <= 0) {
+        alert("يرجى إدخال اسم مسار الإنفاق وتكلفة صحيحة.");
+        return;
+      }
+
+      const date = new Date().toLocaleDateString('ar-EG', { day: '2-digit', month: '2-digit' });
+
+      // إرسال البيانات إلى Firebase
+      const expenseData = { name, cost, expenseType, date };
+      push(ref(database, 'expenses'), expenseData)
+        .then(() => {
+          alert("تمت إضافة مسار الإنفاق بنجاح!");
+          document.getElementById('expenseName').value = '';
+          document.getElementById('expenseCost').value = '';
+          document.getElementById('purchases').checked = true;
+        })
+        .catch((error) => {
+          console.error("Error adding expense: ", error);
+          alert("حدث خطأ أثناء إضافة مسار الإنفاق.");
+        });
+    };
+
+    // حذف مسار إنفاق
+    window.deleteExpense = function (button, expenseType, cost, expenseId) {
+      const row = button.parentElement.parentElement;
+
+      // حذف البيانات من Firebase
+      remove(ref(database, `expenses/${expenseId}`))
+        .then(() => {
+          row.remove();
+          if (expenseType === 'purchases') totalPurchases -= cost;
+          else if (expenseType === 'operational') totalOperational -= cost;
+          updateTotals();
+        })
+        .catch((error) => {
+          console.error("Error deleting expense: ", error);
+          alert("حدث خطأ أثناء حذف مسار الإنفاق.");
+        });
+    };
+
+    // تحديث الإجماليات
+    function updateTotals() {
+      const totalExpenses = totalPurchases + totalOperational;
+      document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+
+      // تحديث إجمالي كل جدول
+      document.getElementById('purchasesTotal').textContent = `إجمالي المشتريات: $${totalPurchases.toFixed(2)}`;
+      document.getElementById('operationalTotal').textContent = `إجمالي المصارف التشغيلية: $${totalOperational.toFixed(2)}`;
+    }
+
+    // تحميل البيانات من Firebase
+    function loadData() {
+      const expensesRef = ref(database, 'expenses');
+
+      onValue(expensesRef, (snapshot) => {
+        const expenses = snapshot.val();
+        if (expenses) {
+          // مسح الجداول قبل إعادة التحميل
+          document.getElementById('operationalTable').innerHTML = '';
+          document.getElementById('purchasesTable').innerHTML = '';
+          totalPurchases = 0;
+          totalOperational = 0;
+
+          Object.keys(expenses).forEach((expenseId) => {
+            const expense = expenses[expenseId];
+            const { name, cost, expenseType, date } = expense;
+
+            const tableBodyId = `${expenseType}Table`;
+            const tableBody = document.getElementById(tableBodyId);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${name}</td>
+              <td>${date}</td>
+              <td>$${cost.toFixed(2)}</td>
+              <td><button class="delete-button" onclick="deleteExpense(this, '${expenseType}', ${cost}, '${expenseId}')">حذف</button></td>
+            `;
+
+            // إضافة الصف في بداية الجدول بدلاً من نهايته
+            if (tableBody.firstChild) {
+              tableBody.insertBefore(row, tableBody.firstChild);
+            } else {
+              tableBody.appendChild(row);
+            }
+
+            if (expenseType === 'purchases') totalPurchases += cost;
+            else if (expenseType === 'operational') totalOperational += cost;
+          });
+          updateTotals();
+        }
+      });
+    }
+  </script>
+  <link rel="stylesheet" href="style sys-out.css">
+  <title>إدارة النفقات</title>
+  <style>
+    .delete-button {
+      padding: 5px 8px;
+      font-size: 0.8em;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .delete-button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <ul>
+      <li><a href="sys.html" class="active">إدارة الدخل</a></li>
+      <li><a href="sys-out.html">إدارة النفقات</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="header-section">
+      <div class="page-title">إدارة الإنفاق</div>
+      <div class="sub-title" contenteditable="true">لشهر 4 لعام 2025</div>
+
+    </div>
+    <div class="top-section">
+      <div class="content-section">
+        <div class="centralized-content">
+          <div class="large-number" id="totalExpenses">$0.00</div>
+          <div class="totals-under">
+            <p id="operationalTotal">إجمالي المصارف التشغيلية: $0.00</p>
+            <p id="purchasesTotal">إجمالي المشتريات: $0.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-section">
+      <div class="section-title">إدارة مسارات الإنفاق</div>
+      <div class="input-section">
+        <input type="text" id="expenseName" placeholder="مسار الإنفاق">
+        <input type="number" id="expenseCost" placeholder="التكلفة">
+        <div>
+          <input type="radio" name="expenseType" value="operational" id="operational" checked>
+          <label for="operational">مصارف تشغيلية</label>
+          <input type="radio" name="expenseType" value="purchases" id="purchases">
+          <label for="purchases">مشتريات</label>
+        </div>
+        <button onclick="addExpense()">إضافة مسار الإنفاق</button>
+      </div>
+
+      <div class="tables-container">
+        <div class="table-container">
+          <h3>المصارف التشغيلية</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>مسار الإنفاق</th>
+                <th>التاريخ</th>
+                <th>التكلفة</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="operationalTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-container">
+          <h3>المشتريات</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>مسار الإنفاق</th>
+                <th>التاريخ</th>
+                <th>التكلفة</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="purchasesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

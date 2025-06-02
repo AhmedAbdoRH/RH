@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الغياب - أحمد أبو العزم</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, query, where, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAunLxvASN6Cbsa_Nc6l78_5lMhe5fP2Qg",
+            authDomain: "momtn-ecab7.firebaseapp.com",
+            projectId: "momtn-ecab7",
+            storageBucket: "momtn-ecab7.appspot.com",
+            messagingSenderId: "98544311111",
+            appId: "1:98544311111:web:0158668f45ae34818fca62",
+            measurementId: "G-W164SZBMDP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let employeeName = "أحمد أبو العزم";
+        let monthlySalary = 52; // الراتب بالدولار
+        let workingDaysPerMonth = 8; // يومان في الأسبوع
+        let exchangeRate = 50.27; // سعر الصرف الافتراضي
+
+        // جلب سعر الصرف الحالي من Open Exchange Rates
+        async function fetchExchangeRate() {
+            const apiKey = "YOUR_OPEN_EXCHANGE_RATES_API_KEY"; // استبدل بمفتاح API الخاص بك
+            const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.rates && data.rates.EGP) {
+                    exchangeRate = data.rates.EGP; // تحديث سعر الصرف
+                } else {
+                    console.error("فشل في جلب سعر الصرف: البيانات غير متوفرة");
+                }
+            } catch (error) {
+                console.error("خطأ في الاتصال بالخادم:", error);
+            }
+        }
+
+        async function addAbsence() {
+            let absenceType = parseFloat(document.querySelector('input[name="absenceType"]:checked').value);
+            let reason = document.getElementById("reason").value;
+            let today = new Date();
+            let isBonus = false;
+
+            try {
+                await addDoc(collection(db, "absences"), {
+                    name: employeeName,
+                    date: today.toISOString(), // للترتيب
+                    displayDate: today.toLocaleDateString("ar-EG"), // للعرض
+                    type: absenceType, // 0.5 أو 1
+                    reason: reason,
+                    isBonus: isBonus
+                });
+                location.reload();
+            } catch (error) {
+                console.error("خطأ أثناء تسجيل الغياب:", error);
+            }
+        }
+
+        async function addBonus() {
+            let bonusType = parseFloat(document.querySelector('input[name="bonusType"]:checked').value);
+            let reason = document.getElementById("bonusReason").value;
+            let today = new Date();
+            let isBonus = true;
+
+            try {
+                await addDoc(collection(db, "absences"), {
+                    name: employeeName,
+                    date: today.toISOString(), // للترتيب
+                    displayDate: today.toLocaleDateString("ar-EG"), // للعرض
+                    type: bonusType, // 0.5 أو 1
+                    reason: reason,
+                    isBonus: isBonus
+                });
+                location.reload();
+            } catch (error) {
+                console.error("خطأ أثناء تسجيل البونص:", error);
+            }
+        }
+
+        async function deleteRecord(recordId) {
+            try {
+                await deleteDoc(doc(db, "absences", recordId));
+                location.reload();
+            } catch (error) {
+                console.error("خطأ أثناء الحذف:", error);
+            }
+        }
+
+        async function updateTable() {
+            await fetchExchangeRate(); // جلب سعر الصرف الحالي قبل التحديث
+
+            let tableBody = document.getElementById("absenceTable");
+            let totalAbsenceBox = document.getElementById("totalAbsence");
+            let totalBonusBox = document.getElementById("totalBonus");
+            let salaryBox = document.getElementById("calculatedSalary");
+            let salaryUSDBox = document.getElementById("calculatedSalaryUSD");
+
+            tableBody.innerHTML = "";
+            let totalAbsence = 0;
+            let totalBonus = 0;
+
+            try {
+                let snapshot = await getDocs(collection(db, "absences"));
+                let records = [];
+
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    if (data.name === employeeName) {
+                        records.push({ id: doc.id, ...data });
+                    }
+                });
+
+                // ترتيب السجلات حسب الأحدث أولاً
+                records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                records.forEach(record => {
+                    let typeDisplay = record.type === 1 ? "يوم كامل" : "نص يوم"; // عرض صحيح بناءً على القيمة
+                    if (record.isBonus) {
+                        totalBonus += record.type;
+                    } else {
+                        totalAbsence += record.type;
+                    }
+                    let row = `<tr>
+                        <td>${record.displayDate}</td>
+                        <td>${typeDisplay} ${record.isBonus ? "<span class='bonus-tag'>بونص</span>" : ""}</td>
+                        <td>${record.reason}</td>
+                        <td><button class="delete-btn" onclick="deleteRecord('${record.id}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+                let attendanceDays = workingDaysPerMonth - totalAbsence + totalBonus;
+                let calculatedSalaryUSD = (attendanceDays / workingDaysPerMonth) * monthlySalary;
+                let calculatedSalaryEGP = (calculatedSalaryUSD * exchangeRate).toFixed(2); // التحويل إلى الجنيه
+
+                totalAbsenceBox.textContent = totalAbsence + " يوم";
+                totalBonusBox.textContent = totalBonus + " يوم";
+                salaryBox.textContent = calculatedSalaryUSD.toFixed(2) + " دولار";
+                salaryUSDBox.textContent = calculatedSalaryEGP + " جنيه";
+
+            } catch (error) {
+                console.error("خطأ أثناء جلب البيانات:", error);
+            }
+        }
+
+        async function clearData() {
+            try {
+                let q = query(collection(db, "absences"), where("name", "==", employeeName));
+                let snapshot = await getDocs(q);
+                snapshot.forEach(async (docRef) => {
+                    await deleteDoc(doc(db, "absences", docRef.id));
+                });
+                location.reload();
+            } catch (error) {
+                console.error("خطأ أثناء حذف البيانات:", error);
+            }
+        }
+
+        window.onload = updateTable;
+        window.addAbsence = addAbsence;
+        window.addBonus = addBonus;
+        window.deleteRecord = deleteRecord;
+        window.clearData = clearData;
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function captureScreenshot() {
+            html2canvas(document.body).then(canvas => {
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "سجل الغياب - أحمد أبو العزم.png";
+                link.click();
+            });
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #ffffff; /* White */
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        h3.absence-title {
+            color: #800000; /* Deep Dark Red */
+            margin-bottom: 20px;
+        }
+
+        h3.bonus-title {
+            color: #006400; /* Dark Green */
+            margin-bottom: 20px;
+        }
+
+        h3.table-title {
+            color: #808080; /* Gray */
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #262626;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        label.absence-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #800000; /* Deep Dark Red */
+            font-weight: 500;
+        }
+
+        label.bonus-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #006400; /* Dark Green */
+            font-weight: 500;
+        }
+
+        input[type="radio"] {
+            margin: 0 5px;
+        }
+
+        select {
+            width: 200px;
+            padding: 10px;
+            background: #333333;
+            border: none;
+            border-radius: 8px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background: #404040;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #808080; /* Gray */
+            border: none;
+            border-radius: 8px;
+            color: #262626;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #666666;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(128, 128, 128, 0.4);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #262626;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #333333;
+        }
+
+        th {
+            background: #333333;
+            color: #808080; /* Gray */
+            font-weight: 600;
+        }
+
+        .bonus-tag {
+            background: #006400; /* Dark Green */
+            color: #e0e0e0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .delete-btn {
+            background: #800000; /* Deep Dark Red */
+            padding: 8px;
+            min-width: 40px;
+        }
+
+        .delete-btn:hover {
+            background: #600000; /* Darker Red */
+        }
+
+        .summary-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 25px;
+            background: #262626;
+            border-radius: 15px;
+            margin: 30px auto;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-item.absence strong {
+            color: #800000; /* Deep Dark Red */
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .summary-item.bonus strong {
+            color: #006400; /* Dark Green */
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .summary-item.salary strong {
+            color: #808080; /* Gray */
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .summary-item span {
+            font-size: 1.2em;
+        }
+
+        .usd-value {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>تسجيل الغياب - أحمد أبو العزم</h2>
+
+        <div class="card">
+            <h3 class="absence-title">تسجيل غياب</h3>
+            <div class="input-group">
+                <label class="absence-label">نوع الغياب:</label>
+                <input type="radio" name="absenceType" value="1"> نص يوم 
+                <input type="radio" name="absenceType" value="0.5" checked>  يوم كامل
+            </div>
+            <div class="input-group">
+                <label class="absence-label">السبب:</label>
+                <select id="reason">
+                    <option value="تأخر">تأخر</option>
+                    <option value="اعتذار">اعتذار</option>
+                    <option value="تأديبي">تأديبي</option>
+                    <option value="إنتاجية ضعيفة">إنتاجية ضعيفة</option>
+                </select>
+            </div>
+            <button onclick="addAbsence()">تسجيل الغياب</button>
+        </div>
+
+        <div class="card">
+            <h3 class="bonus-title">تسجيل بونص</h3>
+            <div class="input-group">
+                <label class="bonus-label">نوع البونص:</label>
+                <input type="radio" name="bonusType" value="1"> نص يوم
+                <input type="radio" name="bonusType" value="0.5" checked> يوم كامل
+            </div>
+            <div class="input-group">
+                <label class="bonus-label">السبب:</label>
+                <select id="bonusReason">
+                    <option value="عمل إضافي">عمل إضافي</option>
+                    <option value="إنتاجية عالية">إنتاجية عالية</option>
+                    <option value="مبادرة">مبادرة</option>
+                    <option value="أداء احترافي">أداء احترافي</option>
+                </select>
+            </div>
+            <button onclick="addBonus()">تسجيل البونص</button>
+        </div>
+
+        <div class="card table-container">
+            <h3 class="table-title">سجل الغياب والبونص</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>السبب</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="absenceTable">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-item absence">
+                <strong>إجمالي الغياب</strong>
+                <span id="totalAbsence">0 يوم</span>
+            </div>
+            <div class="summary-item bonus">
+                <strong>إجمالي البونص</strong>
+                <span id="totalBonus">0 يوم</span>
+            </div>
+            <div class="summary-item salary">
+                <strong>الراتب المستحق</strong>
+                <span id="calculatedSalary">52 دولار</span>
+                <div class="usd-value">≈ <span id="calculatedSalaryUSD">1560 جنيه</span></div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="clearData()">مسح البيانات</button>
+            <button onclick="captureScreenshot()">حفظ التقرير كصورة</button>
+        </div>
+    </div>
+</body>
+</html>

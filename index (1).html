@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأنظمة الداخلية لمؤسسة رحلة هدف</title>
+    <style>
+        /* إعدادات الصفحة */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #2e2e2e; /* لون رمادي داكن */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* الخلفية المتحركة */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(0, 0, 0, 0.7), rgba(255, 0, 0, 0.3));
+            background-size: 400% 400%;
+            z-index: -1;
+            animation: gradientAnimation 3s ease forwards; /* حركة لمرة واحدة */
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* إعدادات الهدر */
+        .header {
+            width: 100%;
+            background: rgba(39, 1, 1, 0.5); /* خلفية شفافة للهدر */
+            backdrop-filter: blur(10px); /* تأثير الجلاس مورفيز */
+            -webkit-backdrop-filter: blur(10px); /* دعم سفاري */
+            color: #f7eded; /* لون أحمر غامق */
+            text-align: center;
+            padding: 20px 0;
+            font-size: 2rem;
+            font-weight: bold;
+            position: sticky; /* يبقى الهدر في الأعلى عند التمرير */
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* إعدادات الكارت */
+        .card {
+            width: 90%;
+            max-width: 500px;
+            aspect-ratio: 4 / 2;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1); /* شفافية خلفية الكارت */
+            backdrop-filter: blur(15px); /* تأثير الجلاس مورفيز */
+            -webkit-backdrop-filter: blur(15px); /* دعم سفاري */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer; /* مؤشر يدوي عند التحويم */
+            margin-top: 100px; /* زيادة المسافة العلوية */
+            margin-bottom: -100px; /* زيادة المسافة العلوية */
+
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+
+        /* تأثير التحويم على الكارت */
+        .card:hover {
+            transform: scale(1.05); /* تكبير بسيط عند التحويم */
+        }
+
+        /* إعدادات اللوغو */
+        .logo {
+            max-width: 94%; /* تقليل الحجم قليلاً */
+            max-height: 94%; /* تقليل الارتفاع */
+            object-fit: contain;
+        }
+
+        /* إعدادات الشاشات الصغيرة */
+        @media (max-width: 480px) {
+            .header {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                max-width: 250px;
+            }
+
+            .logo {
+                max-height: 60%; /* تقليل الحجم للشاشات الصغيرة */
+                margin-top: 20px; /* ضبط المسافة */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهدر -->
+    <div class="header">
+        الأنظمة الداخلية لمؤسسة رحلة هدف
+    </div>
+
+    <!-- الكارت -->
+    <div class="card" onclick="window.location.href='sys.html';">
+        <!-- الكلمة "مكتب" -->
+        <div class="office-label">مكتب</div>
+        <!-- مكان اللوغو -->
+        <img src="RH-sm.png" alt="شعار رحلة هدف" class="logo">
+    </div>
+</body>
+</html>

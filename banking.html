@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بيانات التحويل </title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #1f1f1f;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      color: #e1e1e1;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      color: #333;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+    }
+
+    .copy-btn {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      background-color: #636363; /* لون أغمق قليلاً */
+      color: #ffffff; /* تغيير لون الكتابة إلى الأبيض */
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .copy-btn:active {
+      background-color: #747474;
+    }
+
+    .copy-btn:focus {
+      outline: none;
+    }
+
+    .message {
+      color: #32CD32;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group input:disabled {
+      cursor: not-allowed;
+      background-color: #d8d8d8;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>بيانات التحويل</h1>
+
+    <div class="form-group">
+      <label for="name">الاسم</label>
+      <input id="name" class="input-field" type="text" value="مؤسسة رحلة هدف التجارية " disabled>
+      <button class="copy-btn" onclick="copyText('name')">نسخ</button>
+      <p class="message" id="name-message">تم النسخ!</p>
+    </div>
+
+    <div class="form-group">
+      <label for="account">رقم الحساب</label>
+      <input id="account" class="input-field" type="text" value="262354467001" disabled>
+      <button class="copy-btn" onclick="copyText('account')">نسخ</button>
+      <p class="message" id="account-message">تم النسخ!</p>
+    </div>
+
+    <div class="form-group">
+      <label for="iban">رقم الايبان</label>
+      <input id="iban" class="input-field" type="text" value="SA3145000000262354467001" disabled>
+      <button class="copy-btn" onclick="copyText('iban')">نسخ</button>
+      <p class="message" id="iban-message">تم النسخ!</p>
+    </div>
+
+    <div class="form-group">
+      <label for="bank">البنك</label>
+      <input id="bank" class="input-field" type="text" value="بنك الأول ساب" disabled>
+      <button class="copy-btn" onclick="copyText('bank')">نسخ</button>
+      <p class="message" id="bank-message">تم النسخ!</p>
+    </div>
+  </div>
+
+  <script>
+    function copyText(id) {
+      var textField = document.getElementById(id);
+      var textToCopy = textField.value;
+
+      // نسخ النص باستخدام navigator.clipboard
+      navigator.clipboard.writeText(textToCopy).then(function() {
+        // عرض الملاحظة عند النسخ
+        var message = document.getElementById(id + '-message');
+        message.style.display = 'block';
+
+        // إخفاء الملاحظة بعد فترة قصيرة
+        setTimeout(function() {
+          message.style.display = 'none';
+        }, 1500);
+
+        // تغيير لون الزر بعد النسخ
+        var button = document.querySelector(`#${id} + .copy-btn`);
+        button.style.backgroundColor = '#4e4e4e';
+        button.style.color = 'white';
+      }).catch(function(error) {
+        console.error("لم يتم النسخ: ", error);
+      });
+    }
+  </script>
+</body>
+</html>

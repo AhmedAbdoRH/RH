@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>رفع الصور إلى Firebase</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    #imagesContainer img { width: 200px; margin: 10px; display: block; }
+  </style>
+</head>
+<body>
+
+  <h2>رفع الصور إلى Firebase Storage</h2>
+  
+  <input type="file" id="fileInput" accept="image/*">
+  <button id="uploadBtn">رفع الصورة</button>
+  
+  <h3>الصور المرفوعة:</h3>
+  <div id="imagesContainer"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-storage.js";
+
+    // إعداد Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAunLxvASN6Cbsa_Nc6l78_5lMhe5fP2Qg",
+      authDomain: "momtn-ecab7.firebaseapp.com",
+      projectId: "momtn-ecab7",
+      storageBucket: "momtn-ecab7.appspot.com",  // تأكد أن هذا هو اسم الـ Bucket الخاص بك
+      messagingSenderId: "98544311111",
+      appId: "1:98544311111:web:0158668f45ae34818fca62",
+      measurementId: "G-W164SZBMDP"
+    };
+
+    // تهيئة Firebase
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage();
+
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      const fileInput = document.getElementById("fileInput");
+      if (!fileInput.files.length) {
+        alert("يرجى اختيار صورة لرفعها.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const storageRef = ref(storage, `images/${Date.now()}-${file.name}`);  // حفظ الصورة باسم فريد
+
+      try {
+        // رفع الصورة
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        
+        console.log("تم الرفع بنجاح! الرابط:", url);
+        
+        // عرض الصورة بعد رفعها
+        const img = document.createElement("img");
+        img.src = url;
+        img.style.width = "200px";
+        document.getElementById("imagesContainer").appendChild(img);
+      } catch (error) {
+        console.error("حدث خطأ أثناء رفع الصورة:", error);
+        alert("حدث خطأ أثناء رفع الصورة.");
+      }
+    });
+  </script>
+
+</body>
+</html>
