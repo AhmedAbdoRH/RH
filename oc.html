@@ -102,7 +102,6 @@
       margin: 5px 0;
     }
     
-    /* === New Style for sub-details === */
     .sub-details p {
         margin: 2px 0;
         font-size: 12px;
@@ -150,6 +149,24 @@
       box-sizing: border-box;
     }
 
+    /* === New Styles for Input Group === */
+    .input-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+    }
+    .input-group input:first-child { /* The right input in RTL */
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: 1px solid #555;
+    }
+    .input-group input:last-child { /* The left input in RTL */
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    /* === End New Styles === */
+
     button {
       color: white;
       padding: 12px 25px;
@@ -167,8 +184,8 @@
 
     .table-container {
       margin: 20px auto 0;
-      overflow-x: auto; /* For smaller screens */
-      max-width: 1000px;
+      overflow-x: auto;
+      max-width: 100%;
     }
 
     table {
@@ -187,6 +204,14 @@
     th {
       background-color: #1e88e5;
       color: white;
+    }
+
+    /* === New Style for table expense description === */
+    .expense-desc-small {
+        font-size: 11px;
+        color: #9e9e9e;
+        margin-top: 4px;
+        white-space: normal; /* Allow description to wrap if long */
     }
     
     .positive-row { background-color: rgba(76, 175, 80, 0.15); }
@@ -222,7 +247,11 @@
     .show-more-button::before { content: "▼"; font-size: 12px; }
 
     @media (max-width: 768px) {
-      .input-row { flex-direction: column; }
+      .input-row, .input-group { flex-direction: column; gap: 10px; }
+      .input-group input:first-child, .input-group input:last-child {
+          border-radius: 5px !important;
+          border-left: 1px solid #444 !important;
+      }
       th, td { font-size: 12px; padding: 8px; }
       .page-title { font-size: 22px; }
       .page-subtitle { font-size: 16px; }
@@ -236,15 +265,15 @@
 
   <!-- Tab Buttons -->
   <div class="tab-container">
-    <button class="tab-button active" data-tab="financialTab">الإدارة المالية</button>
-    <button class="tab-button" data-tab="salesTab">عمليات البيع</button>
+    <button class="tab-button active" data-tab="financialTab"> التمويل والنفقات</button>
+    <button class="tab-button" data-tab="salesTab">البيع والأرباح  </button>
   </div>
 
   <!-- Tab 1: Financial Management -->
   <div id="financialTab" class="tab-content active">
     <div class="header-section">
       <div class="page-title">مشروع أونلاين كاتلوج</div>
-      <p class="page-subtitle">عمليات التمويل والنفقات</p>
+      <p class="page-subtitle">التمويل والنفقات  </p>
     </div>
     <div class="top-section">
       <div class="large-number" id="totalIncome">$0.00</div>
@@ -285,12 +314,12 @@
   <!-- Tab 2: Sales Operations -->
   <div id="salesTab" class="tab-content">
     <div class="header-section">
-      <div class="page-title">إدارة عمليات البيع</div>
-      <p class="page-subtitle">تسجيل المبيعات والأرباح</p>
+      <div class="page-title">مشروع أونلاين كاتلوج 
+     </div>
+      <p class="page-subtitle"> صافي الأرباح </p>
     </div>
     <div class="top-section">
       <div class="large-number" id="totalProfitDisplay">$0.00</div>
-      <!-- === Modified details block === -->
       <div class="details sub-details">
         <p>إجمالي الأرباح بالريال: <span id="profitSAR">0.00 ريال</span></p>
         <p>إجمالي الأرباح بالجنيه: <span id="profitEGP">0.00 جنيه</span></p>
@@ -301,11 +330,11 @@
             <input type="text" id="saleName" placeholder="اسم عملية البيع" />
             <input type="number" id="saleAmount" placeholder="إجمالي مبلغ البيع" />
         </div>
-        <!-- === Modified Expense Input === -->
-        <div class="input-row">
-            <input type="number" id="saleExpenses" placeholder="إجمالي النفقات (بنفس العملة)" />
+        <!-- === Modified Expense Inputs in a Group === -->
+        <div class="input-group">
+            <input type="number" id="expenseCost" placeholder="تكلفة النفقات" />
+            <input type="text" id="expenseDescription" placeholder="وصف النفقات" />
         </div>
-        <!-- === Moved Currency Options === -->
         <div class="input-row">
              <div class="currency-options">
                 <label><input type="radio" name="sale_currency" value="SAR" /> ريال</label>
@@ -320,6 +349,7 @@
     <div class="table-container">
       <h3>سجل المبيعات</h3>
       <table>
+        <!-- === Modified Table Headers === -->
         <thead>
           <tr>
             <th>العملية</th>
@@ -342,7 +372,7 @@
     import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
     
     const db = window.db;
-    let exchangeRate = 47.5; // Updated default rate
+    let exchangeRate = 47.5; 
 
     // --- Tab Switching Logic ---
     const tabButtons = document.querySelectorAll(".tab-button");
@@ -450,7 +480,8 @@
     async function addSale() {
         const name = document.getElementById("saleName").value.trim();
         const saleAmount = parseFloat(document.getElementById("saleAmount").value) || 0;
-        const totalExpenses = parseFloat(document.getElementById("saleExpenses").value) || 0;
+        const expenseCost = parseFloat(document.getElementById("expenseCost").value) || 0;
+        const expenseDescription = document.getElementById("expenseDescription").value.trim() || 'لا يوجد وصف';
 
         if (!name || saleAmount <= 0) {
             alert("يرجى إكمال اسم العملية ومبلغ البيع.");
@@ -460,13 +491,14 @@
         const selectedCurrency = document.querySelector('input[name="sale_currency"]:checked').value;
         
         const saleAmountUSD = convertToUSD(saleAmount, selectedCurrency);
-        const totalExpensesUSD = convertToUSD(totalExpenses, selectedCurrency);
-        const netProfit = saleAmountUSD - totalExpensesUSD;
+        const expenseCostUSD = convertToUSD(expenseCost, selectedCurrency);
+        const netProfit = saleAmountUSD - expenseCostUSD;
 
         await addDoc(collection(db, "sales"), {
             name,
             saleAmount: saleAmountUSD,
-            totalExpenses: totalExpensesUSD,
+            expenseCost: expenseCostUSD,
+            expenseDescription: expenseDescription,
             netProfit: netProfit,
             timestamp: serverTimestamp()
         });
@@ -474,7 +506,8 @@
         loadSales();
         document.getElementById("saleName").value = "";
         document.getElementById("saleAmount").value = "";
-        document.getElementById("saleExpenses").value = "";
+        document.getElementById("expenseCost").value = "";
+        document.getElementById("expenseDescription").value = "";
     }
 
     async function deleteSale(id) {
@@ -497,14 +530,19 @@
 
         salesToShow.forEach(sale => {
             const date = sale.timestamp ? new Date(sale.timestamp.seconds * 1000).toLocaleDateString("ar-EG") : '...';
-            // Backward compatibility for expenses
-            const expenses = sale.totalExpenses ?? ((sale.marketerCommission || 0) + (sale.domainCost || 0));
             
+            const desc = sale.expenseDescription || 'نفقات عامة';
+            const cost = sale.expenseCost ?? sale.totalExpenses ?? 0;
+            
+            // === Modified Row for Combined Expense Cell ===
             const row = `
                 <tr class="sale-row">
                     <td>${sale.name}</td>
                     <td>$${(sale.saleAmount || 0).toFixed(2)}</td>
-                    <td>$${expenses.toFixed(2)}</td>
+                    <td>
+                        <div>$${cost.toFixed(2)}</div>
+                        <div class="expense-desc-small">${desc}</div>
+                    </td>
                     <td><b>$${(sale.netProfit || 0).toFixed(2)}</b></td>
                     <td>${date}</td>
                     <td><button class='delete-button' onclick='window.deleteSale("${sale.id}")'>حذف</button></td>
