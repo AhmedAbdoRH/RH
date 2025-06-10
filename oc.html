@@ -44,13 +44,19 @@
 
     .header-section {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       position: relative;
     }
 
     .page-title {
       font-size: 28px;
       font-weight: bold;
+    }
+
+    .page-subtitle {
+      font-size: 18px;
+      color: #b0b0b0;
+      margin-top: 5px;
     }
 
     .top-section {
@@ -80,6 +86,7 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .currency-options {
@@ -140,7 +147,7 @@
     }
 
     th, td {
-      padding: 10px;
+      padding: 12px;
       text-align: left;
       border-bottom: 1px solid #444;
     }
@@ -149,6 +156,16 @@
       background-color: #1e88e5;
       color: white;
     }
+    
+    /* === New Styles for Highlighting Rows === */
+    .positive-row {
+      background-color: rgba(76, 175, 80, 0.15); /* Light green with transparency */
+    }
+    
+    .negative-row {
+      background-color: rgba(244, 67, 54, 0.15); /* Light red with transparency */
+    }
+    /* === End New Styles === */
 
     .delete-button {
       background-color: #1f1f1f; /* رمادي غامق */
@@ -194,7 +211,10 @@
       }
 
       .page-title {
-        font-size: 20px;
+        font-size: 22px;
+      }
+      .page-subtitle {
+        font-size: 16px;
       }
 
       .large-number {
@@ -215,11 +235,21 @@
 
       th, td {
         font-size: 14px;
+        padding: 8px;
       }
     }
   </style>
 </head>
 <body>
+
+<div class="container">
+
+    <!-- === New Title Section === -->
+    <div class="header-section">
+      <div class="page-title">مشروع أونلاين كاتلوج</div>
+      <p class="page-subtitle">الإدارة المالية</p>
+    </div>
+    <!-- === End New Title Section === -->
 
     <div class="top-section">
       <div class="large-number" id="totalIncome">$0.00</div>
@@ -264,7 +294,7 @@
       </table>
       <button id="showMoreButton" class="show-more-button">إظهار المزيد</button>
     </div>
-  </div>
+</div>
 
   <script type="module">
     import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
@@ -361,8 +391,13 @@
       const transactionsToShow = allTransactions.slice(0, visibleTransactions);
 
       transactionsToShow.forEach(transaction => {
+        // === Modified Row Creation ===
+        // Determine class for highlighting based on cost
+        const rowClass = transaction.cost > 0 ? 'positive-row' : (transaction.cost < 0 ? 'negative-row' : '');
+        
+        // Create the row with the appropriate class
         const row = `
-          <tr>
+          <tr class="${rowClass}">
             <td>${transaction.name}</td>
             <td>${transaction.date}</td>
             <td>$${transaction.cost.toFixed(2)}</td>
@@ -370,6 +405,7 @@
           </tr>`;
         
         table.insertAdjacentHTML("beforeend", row);
+        // === End Modified Row Creation ===
       });
 
       // إظهار أو إخفاء زر "إظهار المزيد"
@@ -382,7 +418,7 @@
 
       // إضافة حدث النقر لزر "إظهار المزيد"
       showMoreButton.addEventListener("click", () => {
-        visibleTransactions += 2; // زيادة عدد العمليات الظاهرة
+        visibleTransactions += 10; // زيادة عدد العمليات الظاهرة
         updateTable();
       });
 
@@ -404,36 +440,7 @@
 
     document.getElementById("addPositive").addEventListener("click", () => addTransaction(true));
     document.getElementById("addNegative").addEventListener("click", () => addTransaction(false));
-
-    // مشاركة الصورة مع الرابط
-    document.getElementById("shareButton").addEventListener("click", async () => {
-      try {
-        const container = document.querySelector(".container");
-        const canvas = await html2canvas(container, {
-          scrollY: -window.scrollY, // تجاهل التمرير
-          useCORS: true, // السماح بتحميل الصور الخارجية
-          backgroundColor: "#121212", // خلفية سوداء
-        });
-
-        // تحويل Canvas إلى صورة (Blob)
-        canvas.toBlob(async (blob) => {
-          const file = new File([blob], "screenshot.png", { type: "image/png" });
-
-          // مشاركة الصورة مع الرابط والنص
-          if (navigator.share) {
-            await navigator.share({
-              files: [file],
-              text: "RehlatHadaf.xyz/Trans", // النص المطلوب
-            });
-          } else {
-            alert("عذرًا، مشاركة الملفات غير مدعومة في هذا المتصفح.");
-          }
-        });
-      } catch (error) {
-        console.error("Error sharing the page:", error);
-      }
-    });
-
+    
     fetchExchangeRate();
     loadTransactions();
   </script>
