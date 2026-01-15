@@ -71,10 +71,16 @@ export default function FinancialDashboard({ summary }: FinancialDashboardProps)
       {/* Fixed Bottom Bar for Financial Summary */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 py-2 px-4 shadow-lg z-50 border-t border-gray-700">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="bg-gray-700 bg-opacity-50 rounded-lg p-2 text-center border border-gray-600">
               <h3 className="text-xs font-semibold mb-1 text-gray-200">إجمالي الدخل</h3>
               <div className="text-lg font-bold text-green-400">${totalIncome.toFixed(2)}</div>
+            </div>
+            <div className="bg-gray-700 bg-opacity-50 rounded-lg p-2 text-center border border-gray-600">
+              <h3 className="text-xs font-semibold mb-1 text-gray-200">صافي الربح</h3>
+              <div className={`text-lg font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                ${netProfit.toFixed(2)}
+              </div>
             </div>
             <div className="bg-gray-700 bg-opacity-50 rounded-lg p-2 text-center border border-gray-600">
               <h3 className="text-xs font-semibold mb-1 text-gray-200">إجمالي التمويل</h3>
